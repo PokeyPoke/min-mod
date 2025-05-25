@@ -291,30 +291,24 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
+      background: rgba(0, 0, 0, 0.5);
       z-index: 200;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem; /* Padding for smaller screens */
-      pointer-events: none; /* Allow clicks through backdrop by default */
+      padding: 2rem;
     }
 
-    .modal.hidden { /* Ensure .hidden overrides display:flex */
-        display: none !important;
-    }
-    
     .modal-content {
       background: var(--surface-elevated);
       border-radius: var(--radius);
       box-shadow: var(--shadow-lg);
       width: 100%;
-      max-width: 700px; /* Max width of modal content */
-      max-height: 80vh; /* Max height relative to viewport */
-      overflow: hidden; /* Prevent content from spilling */
+      max-width: 700px;
+      max-height: 80vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      pointer-events: all; /* Modal content should be interactive */
     }
 
     .modal-header {
@@ -323,7 +317,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--surface); /* Slightly different bg for header */
+      background: var(--surface);
     }
 
     .modal-header h2 {
@@ -332,14 +326,14 @@
     }
 
     .modal-close {
-      background: var(--surface); /* Match header or distinct */
+      background: var(--surface);
       border: 1px solid var(--border);
-      font-size: 1rem; /* Icon size */
+      font-size: 1rem;
       cursor: pointer;
       color: var(--text-muted);
-      padding: 0.5rem; /* Make clickable area larger */
+      padding: 0.5rem;
       border-radius: 4px;
-      width: 32px; /* Fixed size for consistency */
+      width: 32px;
       height: 32px;
       display: flex;
       align-items: center;
@@ -353,22 +347,119 @@
     }
 
     .modal-body {
-      flex: 1; /* Allow body to grow and shrink */
-      overflow-y: auto; /* Scrollable content */
-      /* Padding is applied inside the specific modal content (e.g., widget-grid or config-content) */
+      flex: 1;
+      overflow-y: auto;
     }
-    
-    /* .modal-backdrop is not used in the provided HTML, so it's commented out or removed.
-       If you need a separate backdrop element, you can re-enable this.
-    .modal-backdrop {
+
+    /* ===== SEARCH DROPDOWNS ===== */
+    .search-dropdown {
       position: absolute;
-      top: 0;
+      top: 100%;
       left: 0;
       right: 0;
-      bottom: 0;
-      pointer-events: none;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
     }
-    */
+
+    .search-dropdown-large {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .search-dropdown-medium {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .selected-items {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+      padding: 2rem;
+    }
+
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .error-state i {
+      font-size: 2rem;
+      color: var(--error);
+    }
+
+    .esp32-device {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    };
+      color: var(--text-muted);
+      padding: 0.5rem;
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      background: var(--border-light);
+      color: var(--text);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+    }
 
     /* ===== FORMS ===== */
     .form-group {
@@ -537,13 +628,12 @@
     /* ===== TOAST NOTIFICATIONS ===== */
     .toast-container {
       position: fixed;
-      top: 5rem; /* Adjust if header height changes */
+      top: 5rem;
       right: 1rem;
       z-index: 300;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      pointer-events: none; /* Allow clicks through container */
     }
 
     .toast {
@@ -553,15 +643,7 @@
       padding: 0.75rem 1rem;
       box-shadow: var(--shadow-lg);
       max-width: 300px;
-      opacity: 0; /* Start hidden for animation */
-      transform: translateX(100%);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      pointer-events: all; /* Toasts should be interactive if needed */
-    }
-    
-    .toast.show { /* Class to trigger animation */
-        opacity: 1;
-        transform: translateX(0);
+      animation: slideInRight 0.3s ease;
     }
 
     .toast.success { border-left: 4px solid var(--success); }
@@ -569,7 +651,16 @@
     .toast.info { border-left: 4px solid var(--primary); }
 
     /* ===== ANIMATIONS ===== */
-    /* @keyframes slideInRight is handled by .toast.show transition */
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
@@ -596,9 +687,7 @@
       }
       
       .dashboard {
-        padding-top: 9rem; /* Increased to accommodate stacked header */
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding: 8rem 1rem 2rem;
       }
       
       .widget-grid {
@@ -616,7 +705,6 @@
       .toast-container {
         left: 1rem;
         right: 1rem;
-        top: 1rem; /* Adjust for mobile */
       }
       
       .toast {
@@ -687,14 +775,14 @@
           </button>
           
           <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
-            <i class="fas fa-redo-alt"></i> <!-- Changed icon for reset -->
+            <i class="fas fa-refresh"></i>
           </button>
           
           <div class="user-menu">
             <button class="user-button" id="user-menu-button">
               <i class="fas fa-user"></i>
               <span id="user-email">user@example.com</span>
-              <i class="fas fa-chevron-down" style="font-size: 0.75em;"></i>
+              <i class="fas fa-chevron-down"></i>
             </button>
             <div class="user-dropdown" id="user-dropdown">
               <a href="#" id="manage-esp32">
@@ -714,11 +802,11 @@
     <!-- Main Content -->
     <main class="dashboard">
       <div class="grid-stack" id="dashboard-grid">
-        <!-- Widgets will be added here dynamically by GridStack.js -->
+        <!-- Widgets will be added here dynamically -->
       </div>
       
       <!-- Empty State -->
-      <div id="empty-state" class="empty-state hidden"> <!-- Start hidden -->
+      <div id="empty-state" class="empty-state hidden">
         <div class="empty-content">
           <i class="fas fa-plus-circle"></i>
           <h2>Your Dashboard Awaits</h2>
@@ -737,7 +825,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>Add Widget</h2>
-        <button class="modal-close" id="close-picker" aria-label="Close widget picker">
+        <button class="modal-close" id="close-picker">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -745,32 +833,59 @@
       <div class="modal-body">
         <div class="widget-grid">
           <div class="widget-option" data-type="weather">
-            <div class="widget-icon"><i class="fas fa-cloud-sun"></i></div>
-            <h3>Weather</h3> <p>Current weather conditions</p>
+            <div class="widget-icon">
+              <i class="fas fa-cloud-sun"></i>
+            </div>
+            <h3>Weather</h3>
+            <p>Current weather conditions</p>
           </div>
+          
           <div class="widget-option" data-type="crypto">
-            <div class="widget-icon"><i class="fab fa-bitcoin"></i></div>
-            <h3>Crypto</h3> <p>Cryptocurrency prices</p>
+            <div class="widget-icon">
+              <i class="fab fa-bitcoin"></i>
+            </div>
+            <h3>Crypto</h3>
+            <p>Cryptocurrency prices</p>
           </div>
+          
           <div class="widget-option" data-type="stocks">
-            <div class="widget-icon"><i class="fas fa-chart-line"></i></div>
-            <h3>Stocks</h3> <p>Stock market data</p>
+            <div class="widget-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Stocks</h3>
+            <p>Stock market data</p>
           </div>
+          
           <div class="widget-option" data-type="sports">
-            <div class="widget-icon"><i class="fas fa-futbol"></i></div>
-            <h3>Sports</h3> <p>Live scores and schedules</p>
+            <div class="widget-icon">
+              <i class="fas fa-futbol"></i>
+            </div>
+            <h3>Sports</h3>
+            <p>Live scores and schedules</p>
           </div>
+          
           <div class="widget-option" data-type="countdown">
-            <div class="widget-icon"><i class="fas fa-hourglass-half"></i></div>
-            <h3>Countdown</h3> <p>Count down to events</p>
+            <div class="widget-icon">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+            <h3>Countdown</h3>
+            <p>Count down to events</p>
           </div>
+          
           <div class="widget-option" data-type="notes">
-            <div class="widget-icon"><i class="fas fa-sticky-note"></i></div>
-            <h3>Notes</h3> <p>Quick notes and reminders</p>
+            <div class="widget-icon">
+              <i class="fas fa-sticky-note"></i>
+            </div>
+            <h3>Notes</h3>
+            <p>Quick notes and reminders</p>
           </div>
+          
           <div class="widget-option" data-type="todo">
-            <div class="widget-icon"><i class="fas fa-tasks"></i></div>
-            <h3>Todo</h3> <p>Task management</p>
+            <div class="widget-icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <h3>Todo</h3>
+            <p>Task management</p>
           </div>
         </div>
       </div>
@@ -782,10 +897,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="config-title">Configure Widget</h2>
-        <button class="modal-close" id="close-config" aria-label="Close configuration modal">
+        <button class="modal-close" id="close-config">
           <i class="fas fa-times"></i>
         </button>
       </div>
+      
       <div class="modal-body">
         <div id="config-content" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
           <!-- Dynamic configuration forms will be inserted here -->
@@ -799,29 +915,33 @@
     <div class="modal-content">
       <div class="modal-header">
         <h2>ESP32 Device Management</h2>
-        <button class="modal-close" id="close-esp32" aria-label="Close ESP32 management modal">
+        <button class="modal-close" id="close-esp32">
           <i class="fas fa-times"></i>
         </button>
       </div>
+      
       <div class="modal-body">
         <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
           <div class="form-group">
             <label class="form-label">Registered Devices</label>
-            <div id="esp32-devices" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.5rem;">
+            <div id="esp32-devices" style="max-height: 200px; overflow-y: auto;">
               <!-- Devices will be listed here -->
             </div>
           </div>
-          <hr style="border: none; border-top: 1px solid var(--border);">
+          
           <div class="form-group">
             <label class="form-label" for="device-name">Add New Device</label>
             <input type="text" id="device-name" class="form-input" placeholder="Device name (e.g., Living Room Display)">
           </div>
+          
           <div class="form-group">
             <label class="form-label" for="device-id">Device ID</label>
             <input type="text" id="device-id" class="form-input" placeholder="ESP32 device unique ID">
           </div>
+          
           <button id="add-esp32" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Register Device
+            <i class="fas fa-plus"></i>
+            Register Device
           </button>
         </div>
       </div>
@@ -834,10 +954,28 @@
   <!-- ===== EXTERNAL SCRIPTS ===== -->
   <script src="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack-all.js"></script>
   
-  <!-- ===== DASHBOARD APPLICATION (app.js should contain the EnhancedDashboard class) ===== -->
-  <script src="app.js"></script> 
-  
-  <!-- Removed inline GridStack check as it should be part of app.js logic or handled by the app initialization -->
+  <!-- ===== DASHBOARD APPLICATION ===== -->
+  <script src="app.js"></script>
 
+  <!-- ===== INITIALIZATION ===== -->
+  <script>
+    // Check GridStack loading
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof GridStack === 'undefined') {
+        console.error('GridStack failed to load!');
+        document.body.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2rem;">
+            <div>
+              <h1 style="color: var(--error); margin-bottom: 1rem;">Error: GridStack library failed to load</h1>
+              <p style="color: var(--text-muted);">Please check your internet connection and refresh the page.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      console.log('✅ GridStack loaded successfully:', GridStack.version || 'Unknown version');
+    });
+  </script>
 </body>
 </html>
