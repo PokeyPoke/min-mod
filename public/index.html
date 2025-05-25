@@ -3,65 +3,715 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
+  <title>Enhanced Dashboard</title>
   
-  <!-- GridStack CSS - Updated to working version -->
+  <!-- External CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack.min.css">
-  
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-light: #dbeafe;
+      --background: #ffffff;
+      --surface: #f8fafc;
+      --surface-elevated: #ffffff;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius: 8px;
+      --transition: all 0.2s ease;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    [data-theme="dark"] {
+      --background: #0f172a;
+      --surface: #1e293b;
+      --surface-elevated: #334155;
+      --border: #334155;
+      --border-light: #475569;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-light: #64748b;
+      --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    }
+
+    /* ===== RESET & BASE ===== */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.5;
+      transition: var(--transition);
+    }
+
+    /* ===== LAYOUT COMPONENTS ===== */
+    .header {
+      background: var(--surface-elevated);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .dashboard {
+      padding: 6rem 2rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      background: transparent;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border-light);
+    }
+
+    .btn-large {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+
+    /* ===== USER MENU ===== */
+    .user-menu {
+      position: relative;
+    }
+
+    .user-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-button:hover {
+      background: var(--border-light);
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      min-width: 200px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .user-dropdown.show {
+      display: block;
+    }
+
+    .user-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .user-dropdown a:hover {
+      background: var(--border-light);
+    }
+
+    /* ===== WIDGETS ===== */
+    .widget {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+    }
+
+    .widget:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-1px);
+    }
+
+    .widget-header {
+      background: var(--surface);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+    }
+
+    .widget-title {
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .widget-title i {
+      color: var(--primary);
+      width: 16px;
+      text-align: center;
+    }
+
+    .widget-actions {
+      display: flex;
+      gap: 0.25rem;
+      opacity: 0.6;
+      transition: var(--transition);
+    }
+
+    .widget:hover .widget-actions {
+      opacity: 1;
+    }
+
+    .widget-action {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.375rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      transition: var(--transition);
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .widget-action:hover {
+      background: var(--border-light);
+      color: var(--text);
+      border-color: var(--border-light);
+      transform: translateY(-1px);
+    }
+
+    .widget-content {
+      flex: 1;
+      padding: 1rem;
+      overflow: auto;
+    }
+
+    /* ===== MODALS ===== */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-content {
+      background: var(--surface-elevated);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 700px;
+      max-height: 80vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface);
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+
+    .modal-close {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 0.5rem;
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover {
+      background: var(--border-light);
+      color: var(--text);
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* ===== FORMS ===== */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .form-input {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--background);
+      color: var(--text);
+      font-size: 0.875rem;
+      transition: var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    /* ===== AUTH STYLES ===== */
+    .auth-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      background: var(--background);
+    }
+
+    .auth-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .auth-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== UTILITY CLASSES ===== */
+    .hidden { display: none !important; }
+    .positive { color: var(--success); }
+    .negative { color: var(--error); }
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
+
+    /* ===== WIDGET PICKER GRID ===== */
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+
+    .widget-option {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--background);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .widget-option:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .widget-icon {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .widget-option h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .widget-option p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      text-align: center;
+    }
+
+    .empty-content {
+      max-width: 400px;
+    }
+
+    .empty-content i {
+      font-size: 4rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .empty-content h2 {
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .empty-content p {
+      margin-bottom: 1.5rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== TOAST NOTIFICATIONS ===== */
+    .toast-container {
+      position: fixed;
+      top: 5rem;
+      right: 1rem;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      box-shadow: var(--shadow-lg);
+      max-width: 300px;
+      animation: slideInRight 0.3s ease;
+    }
+
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.error { border-left: 4px solid var(--error); }
+    .toast.info { border-left: 4px solid var(--primary); }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    /* ===== RESPONSIVE DESIGN ===== */
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+      }
+      
+      .header-content {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .dashboard {
+        padding: 8rem 1rem 2rem;
+      }
+      
+      .widget-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal {
+        padding: 1rem;
+      }
+      
+      .auth-card {
+        padding: 1.5rem;
+      }
+      
+      .toast-container {
+        left: 1rem;
+        right: 1rem;
+      }
+      
+      .toast {
+        max-width: none;
+      }
+    }
+  </style>
 </head>
 <body data-theme="light">
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <div class="logo">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>Dashboard</span>
+  <!-- ===== AUTHENTICATION SCREEN ===== -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </div>
+        <h1 id="auth-title">Sign In</h1>
+        <p id="auth-subtitle">Access your personalized dashboard</p>
       </div>
       
-      <div class="header-controls">
-        <button id="theme-toggle" class="btn btn-ghost" title="Toggle theme">
-          <i class="fas fa-moon"></i>
-        </button>
+      <form id="auth-form" class="auth-form">
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+        </div>
         
-        <button id="add-widget" class="btn btn-primary">
-          <i class="fas fa-plus"></i>
-          <span>Add Widget</span>
-        </button>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+        </div>
         
-        <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
-          <i class="fas fa-refresh"></i>
+        <div class="form-group hidden" id="confirm-password-group">
+          <label class="form-label" for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password">
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-large" id="auth-submit">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Sign In</span>
         </button>
+      </form>
+      
+      <div class="auth-footer">
+        <p id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch">Sign up</a></p>
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- Main Dashboard -->
-  <main class="dashboard">
-    <div class="grid-stack" id="dashboard-grid">
-      <!-- Widgets will be added here dynamically -->
-    </div>
-    
-    <!-- Empty state -->
-    <div id="empty-state" class="empty-state" style="display: none;">
-      <div class="empty-content">
-        <i class="fas fa-plus-circle"></i>
-        <h2>Your Dashboard Awaits</h2>
-        <p>Click "Add Widget" to get started with your personalized dashboard.</p>
-        <button id="add-first-widget" class="btn btn-primary btn-large">
-          <i class="fas fa-plus"></i>
-          Add Your First Widget
-        </button>
+  <!-- ===== MAIN DASHBOARD ===== -->
+  <div id="dashboard-screen" class="hidden">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </div>
+        
+        <div class="header-controls">
+          <button id="theme-toggle" class="btn btn-ghost" title="Toggle theme">
+            <i class="fas fa-moon"></i>
+          </button>
+          
+          <button id="add-widget" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            <span>Add Widget</span>
+          </button>
+          
+          <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
+            <i class="fas fa-refresh"></i>
+          </button>
+          
+          <div class="user-menu">
+            <button class="user-button" id="user-menu-button">
+              <i class="fas fa-user"></i>
+              <span id="user-email">user@example.com</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="user-dropdown" id="user-dropdown">
+              <a href="#" id="manage-esp32">
+                <i class="fas fa-microchip"></i>
+                <span>Manage ESP32 Devices</span>
+              </a>
+              <a href="#" id="logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </main>
+    </header>
 
-  <!-- Widget Picker Modal -->
-  <div id="widget-picker" class="modal" style="display: none;">
+    <!-- Main Content -->
+    <main class="dashboard">
+      <div class="grid-stack" id="dashboard-grid">
+        <!-- Widgets will be added here dynamically -->
+      </div>
+      
+      <!-- Empty State -->
+      <div id="empty-state" class="empty-state hidden">
+        <div class="empty-content">
+          <i class="fas fa-plus-circle"></i>
+          <h2>Your Dashboard Awaits</h2>
+          <p>Click "Add Widget" to get started with your personalized dashboard.</p>
+          <button id="add-first-widget" class="btn btn-primary btn-large">
+            <i class="fas fa-plus"></i>
+            Add Your First Widget
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== WIDGET PICKER MODAL ===== -->
+  <div id="widget-picker" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Add Widget</h2>
@@ -70,79 +720,152 @@
         </button>
       </div>
       
-      <div class="widget-grid">
-        <div class="widget-option" data-type="weather">
-          <div class="widget-icon">
-            <i class="fas fa-cloud-sun"></i>
+      <div class="modal-body">
+        <div class="widget-grid">
+          <div class="widget-option" data-type="weather">
+            <div class="widget-icon">
+              <i class="fas fa-cloud-sun"></i>
+            </div>
+            <h3>Weather</h3>
+            <p>Current weather conditions</p>
           </div>
-          <h3>Weather</h3>
-          <p>Current weather conditions</p>
-        </div>
-        
-        <div class="widget-option" data-type="crypto">
-          <div class="widget-icon">
-            <i class="fab fa-bitcoin"></i>
+          
+          <div class="widget-option" data-type="crypto">
+            <div class="widget-icon">
+              <i class="fab fa-bitcoin"></i>
+            </div>
+            <h3>Crypto</h3>
+            <p>Cryptocurrency prices</p>
           </div>
-          <h3>Crypto</h3>
-          <p>Cryptocurrency prices</p>
-        </div>
-        
-        <div class="widget-option" data-type="stocks">
-          <div class="widget-icon">
-            <i class="fas fa-chart-line"></i>
+          
+          <div class="widget-option" data-type="stocks">
+            <div class="widget-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>Stocks</h3>
+            <p>Stock market data</p>
           </div>
-          <h3>Stocks</h3>
-          <p>Stock market data</p>
-        </div>
-        
-        <div class="widget-option" data-type="countdown">
-          <div class="widget-icon">
-            <i class="fas fa-hourglass-half"></i>
+          
+          <div class="widget-option" data-type="sports">
+            <div class="widget-icon">
+              <i class="fas fa-futbol"></i>
+            </div>
+            <h3>Sports</h3>
+            <p>Live scores and schedules</p>
           </div>
-          <h3>Countdown</h3>
-          <p>Count down to events</p>
-        </div>
-        
-        <div class="widget-option" data-type="notes">
-          <div class="widget-icon">
-            <i class="fas fa-sticky-note"></i>
+          
+          <div class="widget-option" data-type="countdown">
+            <div class="widget-icon">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+            <h3>Countdown</h3>
+            <p>Count down to events</p>
           </div>
-          <h3>Notes</h3>
-          <p>Quick notes and reminders</p>
-        </div>
-        
-        <div class="widget-option" data-type="todo">
-          <div class="widget-icon">
-            <i class="fas fa-tasks"></i>
+          
+          <div class="widget-option" data-type="notes">
+            <div class="widget-icon">
+              <i class="fas fa-sticky-note"></i>
+            </div>
+            <h3>Notes</h3>
+            <p>Quick notes and reminders</p>
           </div>
-          <h3>Todo</h3>
-          <p>Task management</p>
+          
+          <div class="widget-option" data-type="todo">
+            <div class="widget-icon">
+              <i class="fas fa-tasks"></i>
+            </div>
+            <h3>Todo</h3>
+            <p>Task management</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast Container -->
-  <div id="toast-container" class="toast-container"></div>
-
-  <!-- Loading Indicator -->
-  <div id="loading" class="loading" style="display: none;">
-    <div class="spinner"></div>
-    <span>Loading...</span>
+  <!-- ===== WIDGET CONFIGURATION MODAL ===== -->
+  <div id="widget-config-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="config-title">Configure Widget</h2>
+        <button class="modal-close" id="close-config">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div id="config-content" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Dynamic configuration forms will be inserted here -->
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Scripts - GridStack MUST load before app.js -->
+  <!-- ===== ESP32 MANAGEMENT MODAL ===== -->
+  <div id="esp32-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ESP32 Device Management</h2>
+        <button class="modal-close" id="close-esp32">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Registered Devices</label>
+            <div id="esp32-devices" style="max-height: 200px; overflow-y: auto;">
+              <!-- Devices will be listed here -->
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="device-name">Add New Device</label>
+            <input type="text" id="device-name" class="form-input" placeholder="Device name (e.g., Living Room Display)">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="device-id">Device ID</label>
+            <input type="text" id="device-id" class="form-input" placeholder="ESP32 device unique ID">
+          </div>
+          
+          <button id="add-esp32" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Register Device
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ===== EXTERNAL SCRIPTS ===== -->
   <script src="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack-all.js"></script>
-  <script>
-    // Ensure GridStack is loaded before proceeding
-    if (typeof GridStack === 'undefined') {
-      console.error('GridStack failed to load!');
-      document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h1>Error: GridStack library failed to load</h1><p>Please check your internet connection and refresh the page.</p></div>';
-    } else {
-      console.log('GridStack loaded successfully:', GridStack.version);
-    }
-  </script>
-  <script src="modules.js"></script>
+  
+  <!-- ===== DASHBOARD APPLICATION ===== -->
   <script src="app.js"></script>
+
+  <!-- ===== INITIALIZATION ===== -->
+  <script>
+    // Check GridStack loading
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof GridStack === 'undefined') {
+        console.error('GridStack failed to load!');
+        document.body.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2rem;">
+            <div>
+              <h1 style="color: var(--error); margin-bottom: 1rem;">Error: GridStack library failed to load</h1>
+              <p style="color: var(--text-muted);">Please check your internet connection and refresh the page.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      console.log('✅ GridStack loaded successfully:', GridStack.version || 'Unknown version');
+    });
+  </script>
 </body>
 </html>
