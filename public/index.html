@@ -1,4 +1,153 @@
-<!DOCTYPE html>
+showAuthModal(mode = 'login') {
+        this.currentAuthMode = mode;
+        this.updateAuthModal();
+        const modal = document.getElementById('auth-modal');
+        if (modal) {
+          modal.style.display = 'flex';
+        }
+      }
+      
+      hideAuthModal() {
+        const modal = document.getElementById('auth-modal');
+        if (modal) {
+          modal.style.display = 'none';
+        }
+        const form = document.getElementById('auth-form');
+        if (form) {
+          form.reset();
+        }
+      }
+      
+      updateAuthModal() {
+        const isLogin = this.currentAuthMode === 'login';
+        
+        const title = document.getElementById('auth-title');
+        const submit = document.getElementById('auth-submit');
+        const switchText = document.getElementById('auth-switch-text');
+        const confirmGroup = document.getElementById('confirm-password-group');
+        
+        if (title) {
+          title.textContent = isLogin ? 'Sign In' : 'Sign Up';
+        }
+        
+        if (submit) {
+          submit.innerHTML = isLogin ? 
+            '<i class="fas fa-sign-in-alt"></i><span>Sign In</span>' : 
+            '<i class="fas fa-user-plus"></i><span>Create Account</span>';
+        }
+        
+        if (switchText) {
+          switchText.innerHTML = isLogin ? 
+            'Don\'t have an account? <a href="#" id="auth-switch">Sign up</a>' : 
+            'Already have an account? <a href="#" id="auth-switch">Sign in</a>';
+        }
+        
+        if (confirmGroup) {
+          if (isLogin) {
+            confirmGroup.classList.add('hidden');
+          } else {
+            confirmGroup.classList.remove('hidden');
+          }
+        }
+        
+        // Re-attach switch listener
+        this.setupAuthSwitch();
+      }
+      
+      toggleAuthMode() {
+        this.currentAuthMode = this.currentAuthMode === 'login' ? 'register' : 'login';
+        this.updateAuthModal();
+      }
+      
+      async handleAuthSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirm-password');
+        
+        // Basic validation
+        if (!email || !password) {
+          this.showToast('Please fill in all fields', 'error');
+          return;
+        }
+        
+        if (this.currentAuthMode === 'register' && password !== confirmPassword) {
+          this.showToast('Passwords do not match', 'error');
+          return;
+        }
+        
+        // Simulate authentication (replace with actual API calls)
+        try {
+          const user = {
+            email: email,
+            name: email.split('@')[0],
+            id: Date.now()
+          };
+          
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+          
+          this.isAuthenticated = true;
+          this.currentUser = user;
+          
+          // Save auth state
+          try {
+            localStorage.setItem('dashboard-auth', JSON.stringify({
+              isAuthenticated: true,
+              user: user
+            }));
+          } catch (e) {
+            console.warn('Could not save auth state:', e);
+          }
+          
+          this.hideAuthModal();
+          this.updateUI();
+          this.showToast(`Welcome ${user.name}!`, 'success');
+          
+          // Enable dashboard functionality
+          if (window.dashboard) {
+            window.dashboard.enableAuthenticatedMode();
+          }
+          
+        } catch (error) {
+          this.showToast('Authentication failed. Please try again.', 'error');
+        }
+      }
+      
+      logout() {
+        this.isAuthenticated = false;
+        this.currentUser = null;
+        
+        try {
+          localStorage.removeItem('dashboard-auth');
+        } catch (e) {
+          console.warn('Could not clear auth state:', e);
+        }
+        
+        this.updateUI();
+        this.showToast('Logged out successfully', 'info');
+        
+        // Disable dashboard functionality
+        if (window.dashboard) {
+          window.dashboard.disableAuthenticatedMode();
+        }
+      }
+      
+      updateUI() {
+        const welcomeBanner = document.getElementById('welcome-banner');
+        const authenticatedControls = document.getElementById('authenticated-controls');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        
+        if (this.isAuthenticated) {
+          if (welcomeBanner) welcomeBanner.style.display = 'none';
+          if (authenticatedControls) authenticatedControls.classList.remove('hidden');
+          if (loginBtn) loginBtn.style.display = 'none';
+          if (registerBtn) registerBtn.style.display = 'none';
+        } else {
+          if (welcomeBanner) welcomeBanner.style.display = 'block';
+          if (authenticatedControls) authenticatedControls.classList.add('hidden');<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -902,13 +1051,20 @@
   <!-- ===== EXTERNAL SCRIPTS ===== -->
   <script src="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack-all.js"></script>
   
+  <!-- ===== WIDGET MODULES (Load before app.js) ===== -->
+  <script src="modules.js"></script>
+  
   <!-- ===== MAIN APPLICATION SCRIPT ===== -->
+  <script src="enhanced-app.js"></script>
+
+  <!-- ===== INITIALIZATION SCRIPT ===== -->
   <script>
     // Simple authentication state management
     class AuthManager {
       constructor() {
         this.isAuthenticated = false;
         this.currentUser = null;
+        this.currentAuthMode = 'login';
         this.init();
       }
       
@@ -933,26 +1089,35 @@
       
       setupEventListeners() {
         // Auth modal controls
-        document.getElementById('login-btn').addEventListener('click', () => this.showAuthModal('login'));
-        document.getElementById('register-btn').addEventListener('click', () => this.showAuthModal('register'));
-        document.getElementById('demo-login').addEventListener('click', () => this.showAuthModal('login'));
-        document.getElementById('demo-register').addEventListener('click', () => this.showAuthModal('register'));
-        document.getElementById('close-auth').addEventListener('click', () => this.hideAuthModal());
-        document.getElementById('logout').addEventListener('click', () => this.logout());
+        document.getElementById('login-btn')?.addEventListener('click', () => this.showAuthModal('login'));
+        document.getElementById('register-btn')?.addEventListener('click', () => this.showAuthModal('register'));
+        document.getElementById('demo-login')?.addEventListener('click', () => this.showAuthModal('login'));
+        document.getElementById('demo-register')?.addEventListener('click', () => this.showAuthModal('register'));
+        document.getElementById('close-auth')?.addEventListener('click', () => this.hideAuthModal());
+        document.getElementById('logout')?.addEventListener('click', () => this.logout());
         
         // Auth form submission
-        document.getElementById('auth-form').addEventListener('submit', (e) => this.handleAuthSubmit(e));
-        document.getElementById('auth-switch').addEventListener('click', (e) => {
-          e.preventDefault();
-          this.toggleAuthMode();
-        });
+        document.getElementById('auth-form')?.addEventListener('submit', (e) => this.handleAuthSubmit(e));
         
         // Close modal on outside click
-        document.getElementById('auth-modal').addEventListener('click', (e) => {
+        document.getElementById('auth-modal')?.addEventListener('click', (e) => {
           if (e.target.id === 'auth-modal') {
             this.hideAuthModal();
           }
         });
+        
+        // Initial auth switch setup
+        this.setupAuthSwitch();
+      }
+      
+      setupAuthSwitch() {
+        const authSwitch = document.getElementById('auth-switch');
+        if (authSwitch) {
+          authSwitch.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.toggleAuthMode();
+          });
+        }
       }
       
       showAuthModal(mode = 'login') {
