@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modular Dashboard - Interactive Widget Showcase</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+<link rel="stylesheet" href="css/themes.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="logo">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+      
+      <div class="controls">
+        <div class="theme-switcher">
+          <button class="theme-btn active" data-theme="light">Light</button>
+          <button class="theme-btn" data-theme="dark">Dark</button>
+        </div>
+        
+        <div class="layout-switcher">
+          <button class="layout-btn" data-layout="minimal" title="Minimal">
+            <i class="fas fa-th-large"></i>
+          </button>
+          <button class="layout-btn active" data-layout="balanced" title="Balanced">
+            <i class="fas fa-th"></i>
+          </button>
+          <button class="layout-btn" data-layout="dense" title="Dense">
+            <i class="fas fa-grip"></i>
+          </button>
+          <button class="layout-btn" data-layout="ultra-dense" title="Ultra Dense">
+            <i class="fas fa-border-all"></i>
+          </button>
+        </div>
+        
+        <!-- Authentication Section -->
+        <div id="auth-section">
+          <button id="login-btn" class="btn btn-outline-light btn-sm me-2">Sign In</button>
+          <button id="register-btn" class="btn btn-primary btn-sm">Sign Up</button>
+        </div>
+        
+        <!-- Dashboard Button -->
+        <button id="customize-btn" class="dashboard-btn" style="display: none;">
+          <i class="fas fa-cog"></i>
+          Customize
+        </button>
+        
+        <a href="/dashboard" class="dashboard-btn">
+          <i class="fas fa-external-link-alt"></i>
+          Full Dashboard
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <div class="widgets-grid grid-balanced" id="widgets-grid">
+      <!-- Widgets will be loaded dynamically -->
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <p>Loading your dashboard...</p>
+    </div>
+  </main>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/homepage.js"></script>
+</body>
+</html>
