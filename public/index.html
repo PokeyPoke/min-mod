@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Custom CSS -->
   <style>
     /* ===== CSS VARIABLES ===== */
     :root {
@@ -149,58 +148,54 @@
       font-size: 1rem;
     }
 
-    /* ===== USER MENU ===== */
-    .user-menu {
-      position: relative;
-    }
-
-    .user-button {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
+    /* ===== WELCOME BANNER ===== */
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+      padding: 2rem;
       border-radius: var(--radius);
-      color: var(--text);
-      cursor: pointer;
-      transition: var(--transition);
+      margin-bottom: 2rem;
+      text-align: center;
     }
 
-    .user-button:hover {
-      background: var(--border-light);
+    .welcome-banner h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
     }
 
-    .user-dropdown {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      margin-top: 0.5rem;
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-lg);
-      min-width: 200px;
-      display: none;
-      z-index: 1000;
+    .welcome-banner p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
     }
 
-    .user-dropdown.show {
-      display: block;
-    }
-
-    .user-dropdown a {
+    .welcome-actions {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.75rem 1rem;
-      color: var(--text);
-      text-decoration: none;
-      transition: var(--transition);
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
-    .user-dropdown a:hover {
-      background: var(--border-light);
+    .btn-white {
+      background: white;
+      color: var(--primary);
+      border: 2px solid white;
+    }
+
+    .btn-white:hover {
+      background: transparent;
+      color: white;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-outline:hover {
+      background: white;
+      color: var(--primary);
     }
 
     /* ===== WIDGETS ===== */
@@ -228,7 +223,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      cursor: move;
     }
 
     .widget-title {
@@ -283,6 +277,121 @@
       flex: 1;
       padding: 1rem;
       overflow: auto;
+    }
+
+    /* Widget specific styles */
+    .weather-widget {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+    }
+
+    .weather-widget .widget-header {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .crypto-widget {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: white;
+    }
+
+    .crypto-widget .widget-header {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .stocks-widget {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .stocks-widget .widget-header {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .countdown-widget {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+    }
+
+    .countdown-widget .widget-header {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Widget Content Layouts */
+    .widget-data {
+      text-align: center;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .widget-main {
+      font-size: 2rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+    }
+
+    .widget-sub {
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    .widget-location {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+
+    .widget-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
+    }
+
+    .detail-item {
+      text-align: center;
+    }
+
+    .detail-label {
+      opacity: 0.7;
+      display: block;
+    }
+
+    .detail-value {
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    /* Countdown specific */
+    .countdown-timer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .countdown-unit {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+
+    .countdown-value {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .countdown-label {
+      font-size: 0.75rem;
+      opacity: 0.8;
     }
 
     /* ===== MODALS ===== */
@@ -350,96 +459,6 @@
     .modal-body {
       flex: 1;
       overflow-y: auto;
-    }
-
-    /* ===== SEARCH DROPDOWNS ===== */
-    .search-dropdown {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 var(--radius) var(--radius);
-      max-height: 200px;
-      overflow-y: auto;
-      z-index: 1000;
-      display: none;
-    }
-
-    .search-dropdown-large {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 var(--radius) var(--radius);
-      max-height: 400px;
-      overflow-y: auto;
-      z-index: 1000;
-      display: none;
-    }
-
-    .search-dropdown-medium {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 var(--radius) var(--radius);
-      max-height: 300px;
-      overflow-y: auto;
-      z-index: 1000;
-      display: none;
-    }
-
-    .selected-items {
-      margin-top: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-height: 150px;
-      overflow-y: auto;
-    }
-
-    .loading-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      color: var(--text-muted);
-      padding: 2rem;
-    }
-
-    .error-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      color: var(--text-muted);
-      padding: 1rem;
-      text-align: center;
-    }
-
-    .error-state i {
-      font-size: 2rem;
-      color: var(--error);
-    }
-
-    .esp32-device {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 0.75rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 0.5rem;
     }
 
     /* ===== FORMS ===== */
@@ -577,35 +596,6 @@
       color: var(--text-muted);
     }
 
-    /* ===== EMPTY STATE ===== */
-    .empty-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      text-align: center;
-    }
-
-    .empty-content {
-      max-width: 400px;
-    }
-
-    .empty-content i {
-      font-size: 4rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-    }
-
-    .empty-content h2 {
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-
-    .empty-content p {
-      margin-bottom: 1.5rem;
-      color: var(--text-muted);
-    }
-
     /* ===== TOAST NOTIFICATIONS ===== */
     .toast-container {
       position: fixed;
@@ -631,6 +621,25 @@
     .toast.error { border-left: 4px solid var(--error); }
     .toast.info { border-left: 4px solid var(--primary); }
 
+    /* ===== LOADING STATE ===== */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+      padding: 2rem;
+    }
+
+    .spinner {
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
     /* ===== ANIMATIONS ===== */
     @keyframes slideInRight {
       from {
@@ -645,15 +654,6 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-
-    .spinner {
-      width: 2rem;
-      height: 2rem;
-      border: 2px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
     }
 
     /* ===== RESPONSIVE DESIGN ===== */
@@ -691,58 +691,85 @@
       .toast {
         max-width: none;
       }
+      
+      .welcome-banner h1 {
+        font-size: 1.5rem;
+      }
+      
+      .welcome-banner p {
+        font-size: 1rem;
+      }
+      
+      .welcome-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    /* Grid stack overrides */
+    .grid-stack > .grid-stack-item > .grid-stack-item-content {
+      border-radius: var(--radius);
+      overflow: visible;
+    }
+
+    .grid-stack > .grid-stack-item.grid-stack-placeholder > .placeholder-content {
+      background: var(--primary);
+      opacity: 0.2;
+      border-radius: var(--radius);
     }
   </style>
 </head>
 <body data-theme="light">
-  <!-- ===== AUTHENTICATION SCREEN ===== -->
-  <div id="auth-screen" class="auth-container">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
-          <i class="fas fa-tachometer-alt"></i>
-          <span>Dashboard</span>
-        </div>
-        <h1 id="auth-title">Sign In</h1>
-        <p id="auth-subtitle">Access your personalized dashboard</p>
+  <!-- ===== AUTHENTICATION MODAL ===== -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2 id="auth-title">Sign In</h2>
+        <button class="modal-close" id="close-auth">
+          <i class="fas fa-times"></i>
+        </button>
       </div>
       
-      <form id="auth-form" class="auth-form">
-        <div class="form-group">
-          <label class="form-label" for="email">Email</label>
-          <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" autocomplete="email" required>
+      <div class="modal-body">
+        <div style="padding: 1.5rem;">
+          <form id="auth-form" class="auth-form">
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" autocomplete="email" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="password">Password</label>
+              <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" autocomplete="current-password" required>
+            </div>
+            
+            <div class="form-group hidden" id="confirm-password-group">
+              <label class="form-label" for="confirm-password">Confirm Password</label>
+              <input type="password" id="confirm-password" name="confirm-password" class="form-input" placeholder="Confirm your password" autocomplete="new-password">
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-large" id="auth-submit">
+              <i class="fas fa-sign-in-alt"></i>
+              <span>Sign In</span>
+            </button>
+          </form>
+          
+          <div class="auth-footer">
+            <p id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch">Sign up</a></p>
+          </div>
         </div>
-        
-        <div class="form-group">
-          <label class="form-label" for="password">Password</label>
-          <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" autocomplete="current-password" required>
-        </div>
-        
-        <div class="form-group hidden" id="confirm-password-group">
-          <label class="form-label" for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" name="confirm-password" class="form-input" placeholder="Confirm your password" autocomplete="new-password">
-        </div>
-        
-        <button type="submit" class="btn btn-primary btn-large" id="auth-submit">
-          <i class="fas fa-sign-in-alt"></i>
-          <span>Sign In</span>
-        </button>
-      </form>
-      
-      <div class="auth-footer">
-        <p id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch">Sign up</a></p>
       </div>
     </div>
   </div>
 
   <!-- ===== MAIN DASHBOARD ===== -->
-  <div id="dashboard-screen" class="hidden">
+  <div id="dashboard-screen">
     <!-- Header -->
     <header class="header">
       <div class="header-content">
         <div class="logo">
           <i class="fas fa-tachometer-alt"></i>
-          <span>Dashboard</span>
+          <span>Enhanced Dashboard</span>
         </div>
         
         <div class="header-controls">
@@ -750,31 +777,31 @@
             <i class="fas fa-moon"></i>
           </button>
           
-          <button id="add-widget" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            <span>Add Widget</span>
+          <button id="login-btn" class="btn btn-primary">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
           </button>
           
-          <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
-            <i class="fas fa-refresh"></i>
+          <button id="register-btn" class="btn btn-ghost">
+            <i class="fas fa-user-plus"></i>
+            <span>Register</span>
           </button>
           
-          <div class="user-menu">
-            <button class="user-button" id="user-menu-button">
-              <i class="fas fa-user"></i>
-              <span id="user-email">user@example.com</span>
-              <i class="fas fa-chevron-down"></i>
+          <!-- Authenticated user controls (hidden by default) -->
+          <div id="authenticated-controls" class="hidden" style="display: flex; gap: 0.75rem; align-items: center;">
+            <button id="add-widget" class="btn btn-primary">
+              <i class="fas fa-plus"></i>
+              <span>Add Widget</span>
             </button>
-            <div class="user-dropdown" id="user-dropdown">
-              <a href="#" id="manage-esp32">
-                <i class="fas fa-microchip"></i>
-                <span>Manage ESP32 Devices</span>
-              </a>
-              <a href="#" id="logout">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-              </a>
-            </div>
+            
+            <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
+              <i class="fas fa-refresh"></i>
+            </button>
+            
+            <button id="logout" class="btn btn-ghost">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
           </div>
         </div>
       </div>
@@ -782,21 +809,25 @@
 
     <!-- Main Content -->
     <main class="dashboard">
-      <div class="grid-stack" id="dashboard-grid">
-        <!-- Widgets will be added here dynamically -->
-      </div>
-      
-      <!-- Empty State -->
-      <div id="empty-state" class="empty-state hidden">
-        <div class="empty-content">
-          <i class="fas fa-plus-circle"></i>
-          <h2>Your Dashboard Awaits</h2>
-          <p>Click "Add Widget" to get started with your personalized dashboard.</p>
-          <button id="add-first-widget" class="btn btn-primary btn-large">
-            <i class="fas fa-plus"></i>
-            Add Your First Widget
+      <!-- Welcome Banner (shown for non-authenticated users) -->
+      <div id="welcome-banner" class="welcome-banner">
+        <h1>Welcome to Enhanced Dashboard</h1>
+        <p>Create and customize your perfect dashboard with real-time data widgets. See the live demo below!</p>
+        <div class="welcome-actions">
+          <button id="demo-login" class="btn btn-white btn-large">
+            <i class="fas fa-sign-in-alt"></i>
+            Get Started - Login
+          </button>
+          <button id="demo-register" class="btn btn-outline btn-large">
+            <i class="fas fa-user-plus"></i>
+            Create Account
           </button>
         </div>
+      </div>
+      
+      <!-- Demo Dashboard -->
+      <div class="grid-stack" id="dashboard-grid">
+        <!-- Demo widgets will be loaded here -->
       </div>
     </main>
   </div>
@@ -837,14 +868,6 @@
             <p>Stock market data</p>
           </div>
           
-          <div class="widget-option" data-type="sports">
-            <div class="widget-icon">
-              <i class="fas fa-futbol"></i>
-            </div>
-            <h3>Sports</h3>
-            <p>Live scores and schedules</p>
-          </div>
-          
           <div class="widget-option" data-type="countdown">
             <div class="widget-icon">
               <i class="fas fa-hourglass-half"></i>
@@ -873,92 +896,1011 @@
     </div>
   </div>
 
-  <!-- ===== WIDGET CONFIGURATION MODAL ===== -->
-  <div id="widget-config-modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="config-title">Configure Widget</h2>
-        <button class="modal-close" id="close-config">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      
-      <div class="modal-body">
-        <div id="config-content" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
-          <!-- Dynamic configuration forms will be inserted here -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== ESP32 MANAGEMENT MODAL ===== -->
-  <div id="esp32-modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>ESP32 Device Management</h2>
-        <button class="modal-close" id="close-esp32">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      
-      <div class="modal-body">
-        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
-          <div class="form-group">
-            <label class="form-label">Registered Devices</label>
-            <div id="esp32-devices" style="max-height: 200px; overflow-y: auto;">
-              <!-- Devices will be listed here -->
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label" for="device-name">Add New Device</label>
-            <input type="text" id="device-name" name="device-name" class="form-input" placeholder="Device name (e.g., Living Room Display)" autocomplete="off">
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label" for="device-id">Device ID</label>
-            <input type="text" id="device-id" name="device-id" class="form-input" placeholder="ESP32 device unique ID" autocomplete="off">
-          </div>
-          
-          <button id="add-esp32" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            Register Device
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- ===== TOAST CONTAINER ===== -->
   <div id="toast-container" class="toast-container"></div>
 
   <!-- ===== EXTERNAL SCRIPTS ===== -->
   <script src="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack-all.js"></script>
   
-  <!-- ===== WIDGET MODULES (Load before app.js) ===== -->
-  <script src="modules.js"></script>
-  
-  <!-- ===== DASHBOARD APPLICATION ===== -->
-  <script src="app.js"></script>
-
-  <!-- ===== INITIALIZATION ===== -->
+  <!-- ===== MAIN APPLICATION SCRIPT ===== -->
   <script>
-    // Check GridStack loading
+    // Simple authentication state management
+    class AuthManager {
+      constructor() {
+        this.isAuthenticated = false;
+        this.currentUser = null;
+        this.init();
+      }
+      
+      init() {
+        // Check if user is already logged in
+        try {
+          const saved = localStorage.getItem('dashboard-auth');
+          if (saved) {
+            const authData = JSON.parse(saved);
+            if (authData.isAuthenticated) {
+              this.isAuthenticated = true;
+              this.currentUser = authData.user;
+              this.updateUI();
+            }
+          }
+        } catch (e) {
+          console.warn('Could not load auth state:', e);
+        }
+        
+        this.setupEventListeners();
+      }
+      
+      setupEventListeners() {
+        // Auth modal controls
+        document.getElementById('login-btn').addEventListener('click', () => this.showAuthModal('login'));
+        document.getElementById('register-btn').addEventListener('click', () => this.showAuthModal('register'));
+        document.getElementById('demo-login').addEventListener('click', () => this.showAuthModal('login'));
+        document.getElementById('demo-register').addEventListener('click', () => this.showAuthModal('register'));
+        document.getElementById('close-auth').addEventListener('click', () => this.hideAuthModal());
+        document.getElementById('logout').addEventListener('click', () => this.logout());
+        
+        // Auth form submission
+        document.getElementById('auth-form').addEventListener('submit', (e) => this.handleAuthSubmit(e));
+        document.getElementById('auth-switch').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.toggleAuthMode();
+        });
+        
+        // Close modal on outside click
+        document.getElementById('auth-modal').addEventListener('click', (e) => {
+          if (e.target.id === 'auth-modal') {
+            this.hideAuthModal();
+          }
+        });
+      }
+      
+      showAuthModal(mode = 'login') {
+        this.currentAuthMode = mode;
+        this.updateAuthModal();
+        document.getElementById('auth-modal').style.display = 'flex';
+      }
+      
+      hideAuthModal() {
+        document.getElementById('auth-modal').style.display = 'none';
+        document.getElementById('auth-form').reset();
+      }
+      
+      updateAuthModal() {
+        const isLogin = this.currentAuthMode === 'login';
+        
+        document.getElementById('auth-title').textContent = isLogin ? 'Sign In' : 'Sign Up';
+        document.getElementById('auth-submit').innerHTML = isLogin ? 
+          '<i class="fas fa-sign-in-alt"></i><span>Sign In</span>' : 
+          '<i class="fas fa-user-plus"></i><span>Create Account</span>';
+        document.getElementById('auth-switch-text').innerHTML = isLogin ? 
+          'Don\'t have an account? <a href="#" id="auth-switch">Sign up</a>' : 
+          'Already have an account? <a href="#" id="auth-switch">Sign in</a>';
+        
+        const confirmGroup = document.getElementById('confirm-password-group');
+        if (isLogin) {
+          confirmGroup.classList.add('hidden');
+        } else {
+          confirmGroup.classList.remove('hidden');
+        }
+        
+        // Re-attach switch listener
+        document.getElementById('auth-switch').addEventListener('click', (e) => {
+          e.preventDefault();
+          this.toggleAuthMode();
+        });
+      }
+      
+      toggleAuthMode() {
+        this.currentAuthMode = this.currentAuthMode === 'login' ? 'register' : 'login';
+        this.updateAuthModal();
+      }
+      
+      async handleAuthSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirm-password');
+        
+        // Basic validation
+        if (!email || !password) {
+          this.showToast('Please fill in all fields', 'error');
+          return;
+        }
+        
+        if (this.currentAuthMode === 'register' && password !== confirmPassword) {
+          this.showToast('Passwords do not match', 'error');
+          return;
+        }
+        
+        // Simulate authentication (replace with actual API calls)
+        try {
+          const user = {
+            email: email,
+            name: email.split('@')[0],
+            id: Date.now()
+          };
+          
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+          
+          this.isAuthenticated = true;
+          this.currentUser = user;
+          
+          // Save auth state
+          try {
+            localStorage.setItem('dashboard-auth', JSON.stringify({
+              isAuthenticated: true,
+              user: user
+            }));
+          } catch (e) {
+            console.warn('Could not save auth state:', e);
+          }
+          
+          this.hideAuthModal();
+          this.updateUI();
+          this.showToast(`Welcome ${user.name}!`, 'success');
+          
+          // Enable dashboard functionality
+          if (window.dashboard) {
+            window.dashboard.enableAuthenticatedMode();
+          }
+          
+        } catch (error) {
+          this.showToast('Authentication failed. Please try again.', 'error');
+        }
+      }
+      
+      logout() {
+        this.isAuthenticated = false;
+        this.currentUser = null;
+        
+        try {
+          localStorage.removeItem('dashboard-auth');
+        } catch (e) {
+          console.warn('Could not clear auth state:', e);
+        }
+        
+        this.updateUI();
+        this.showToast('Logged out successfully', 'info');
+        
+        // Disable dashboard functionality
+        if (window.dashboard) {
+          window.dashboard.disableAuthenticatedMode();
+        }
+      }
+      
+      updateUI() {
+        const welcomeBanner = document.getElementById('welcome-banner');
+        const authenticatedControls = document.getElementById('authenticated-controls');
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        
+        if (this.isAuthenticated) {
+          welcomeBanner.style.display = 'none';
+          authenticatedControls.classList.remove('hidden');
+          loginBtn.style.display = 'none';
+          registerBtn.style.display = 'none';
+        } else {
+          welcomeBanner.style.display = 'block';
+          authenticatedControls.classList.add('hidden');
+          loginBtn.style.display = 'flex';
+          registerBtn.style.display = 'flex';
+        }
+      }
+      
+      showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        toastContainer.appendChild(toast);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+              if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+              }
+            }, 300);
+          }
+        }, 3000);
+      }
+    }
+
+    // Enhanced Dashboard Application
+    class Dashboard {
+      constructor() {
+        this.grid = null;
+        this.widgets = new Map();
+        this.theme = 'light';
+        this.widgetCounter = 0;
+        this.demoMode = true; // Start in demo mode
+        
+        // Try to load theme from localStorage with fallback
+        try {
+          this.theme = localStorage.getItem('dashboard-theme') || 'light';
+        } catch (e) {
+          console.warn('Could not access localStorage for theme:', e);
+        }
+        
+        this.init();
+      }
+      
+      init() {
+        this.initializeTheme();
+        this.initializeGrid();
+        this.setupEventListeners();
+        this.loadDemoWidgets(); // Load demo widgets by default
+      }
+      
+      initializeTheme() {
+        document.body.dataset.theme = this.theme;
+        const themeIcon = document.querySelector('#theme-toggle i');
+        if (themeIcon) {
+          themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+      }
+      
+      initializeGrid() {
+        this.grid = GridStack.init({
+          cellHeight: 100,
+          margin: 16,
+          float: false,
+          animate: true,
+          resizable: {
+            handles: 'se'
+          },
+          draggable: {
+            handle: '.widget-header'
+          },
+          disableDrag: this.demoMode, // Disable dragging in demo mode
+          disableResize: this.demoMode // Disable resizing in demo mode
+        });
+        
+        // Save layout on change (only when authenticated)
+        this.grid.on('change', () => {
+          if (!this.demoMode) {
+            this.saveLayout();
+          }
+        });
+      }
+      
+      setupEventListeners() {
+        // Theme toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+          themeToggle.addEventListener('click', () => {
+            this.toggleTheme();
+          });
+        }
+        
+        // Add widget buttons (only work when authenticated)
+        const addWidget = document.getElementById('add-widget');
+        if (addWidget) {
+          addWidget.addEventListener('click', () => {
+            if (this.demoMode) {
+              window.authManager.showAuthModal('login');
+              window.authManager.showToast('Please login to add widgets', 'info');
+            } else {
+              this.showWidgetPicker();
+            }
+          });
+        }
+        
+        // Reset layout
+        const resetLayout = document.getElementById('reset-layout');
+        if (resetLayout) {
+          resetLayout.addEventListener('click', () => {
+            if (this.demoMode) {
+              this.loadDemoWidgets();
+              this.showToast('Demo layout reset', 'info');
+            } else if (confirm('Reset layout? This will remove all widgets.')) {
+              this.resetLayout();
+            }
+          });
+        }
+        
+        // Widget picker events
+        const closePicker = document.getElementById('close-picker');
+        if (closePicker) {
+          closePicker.addEventListener('click', () => {
+            this.hideWidgetPicker();
+          });
+        }
+        
+        // Click outside modal to close
+        const widgetPicker = document.getElementById('widget-picker');
+        if (widgetPicker) {
+          widgetPicker.addEventListener('click', (e) => {
+            if (e.target.id === 'widget-picker') {
+              this.hideWidgetPicker();
+            }
+          });
+        }
+        
+        // Widget type selection
+        document.querySelectorAll('.widget-option').forEach(option => {
+          option.addEventListener('click', () => {
+            const type = option.dataset.type;
+            this.addWidget(type);
+            this.hideWidgetPicker();
+          });
+        });
+      }
+      
+      enableAuthenticatedMode() {
+        this.demoMode = false;
+        this.grid.enableMove(true);
+        this.grid.enableResize(true);
+        this.loadLayout(); // Load user's saved layout
+      }
+      
+      disableAuthenticatedMode() {
+        this.demoMode = true;
+        this.grid.enableMove(false);
+        this.grid.enableResize(false);
+        this.loadDemoWidgets(); // Back to demo mode
+      }
+      
+      toggleTheme() {
+        this.theme = this.theme === 'light' ? 'dark' : 'light';
+        document.body.dataset.theme = this.theme;
+        
+        try {
+          localStorage.setItem('dashboard-theme', this.theme);
+        } catch (e) {
+          console.warn('Could not save theme to localStorage:', e);
+        }
+        
+        const themeIcon = document.querySelector('#theme-toggle i');
+        if (themeIcon) {
+          themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        
+        this.showToast(`Switched to ${this.theme} theme`, 'info');
+      }
+      
+      async loadDemoWidgets() {
+        // Clear existing widgets
+        this.widgets.forEach((widget) => {
+          this.grid.removeWidget(widget.element);
+        });
+        this.widgets.clear();
+        
+        // Add demo widgets with real data
+        await this.addWidget('weather', { location: 'New York', units: 'imperial' }, { x: 0, y: 0, w: 4, h: 3 });
+        await this.addWidget('crypto', { coin: 'bitcoin', currency: 'usd' }, { x: 4, y: 0, w: 4, h: 3 });
+        await this.addWidget('stocks', { symbol: 'AAPL' }, { x: 8, y: 0, w: 4, h: 3 });
+        await this.addWidget('countdown', { 
+          title: 'New Year 2026', 
+          targetDate: '2026-01-01T00:00:00' 
+        }, { x: 0, y: 3, w: 6, h: 3 });
+      }
+      
+      showWidgetPicker() {
+        const picker = document.getElementById('widget-picker');
+        if (picker) {
+          picker.style.display = 'flex';
+        }
+      }
+      
+      hideWidgetPicker() {
+        const picker = document.getElementById('widget-picker');
+        if (picker) {
+          picker.style.display = 'none';
+        }
+      }
+      
+      async addWidget(type, config = {}, gridOptions = {}) {
+        const module = this.getWidgetModule(type);
+        if (!module) {
+          this.showToast(`Widget type "${type}" not found`, 'error');
+          return;
+        }
+        
+        const widgetId = `widget-${type}-${++this.widgetCounter}`;
+        
+        // Create widget element
+        const widgetEl = document.createElement('div');
+        widgetEl.className = `widget ${type}-widget`;
+        widgetEl.dataset.widgetId = widgetId;
+        widgetEl.dataset.widgetType = type;
+        
+        // Create widget structure
+        widgetEl.innerHTML = `
+          <div class="widget-header">
+            <div class="widget-title">
+              <i class="${module.icon}"></i>
+              <span>${module.name}</span>
+            </div>
+            <div class="widget-actions">
+              <button class="widget-action refresh-widget" title="Refresh">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              ${!this.demoMode ? '<button class="widget-action remove-widget" title="Remove"><i class="fas fa-times"></i></button>' : ''}
+            </div>
+          </div>
+          <div class="widget-content">
+            <div class="loading">
+              <div class="spinner"></div>
+              <span>Loading...</span>
+            </div>
+          </div>
+        `;
+        
+        // Add to grid with default size
+        const defaultSize = module.defaultSize || { w: 4, h: 3 };
+        const gridItem = this.grid.addWidget(widgetEl, {
+          w: gridOptions.w || defaultSize.w,
+          h: gridOptions.h || defaultSize.h,
+          x: gridOptions.x,
+          y: gridOptions.y,
+          autoPosition: !gridOptions.x && !gridOptions.y
+        });
+        
+        // Setup widget actions
+        this.setupWidgetActions(widgetEl);
+        
+        // Store widget info
+        this.widgets.set(widgetId, {
+          id: widgetId,
+          type: type,
+          config: config,
+          element: widgetEl
+        });
+        
+        // Load widget data
+        await this.loadWidgetData(widgetId);
+        
+        if (!this.demoMode) {
+          this.showToast(`Added ${module.name} widget`, 'success');
+        }
+      }
+      
+      setupWidgetActions(widgetEl) {
+        const widgetId = widgetEl.dataset.widgetId;
+        
+        // Refresh button
+        const refreshBtn = widgetEl.querySelector('.refresh-widget');
+        if (refreshBtn) {
+          refreshBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.loadWidgetData(widgetId);
+          });
+        }
+        
+        // Remove button (only in authenticated mode)
+        const removeBtn = widgetEl.querySelector('.remove-widget');
+        if (removeBtn) {
+          removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.removeWidget(widgetId);
+          });
+        }
+      }
+      
+      async loadWidgetData(widgetId) {
+        const widget = this.widgets.get(widgetId);
+        if (!widget) return;
+        
+        const module = this.getWidgetModule(widget.type);
+        const contentEl = widget.element.querySelector('.widget-content');
+        
+        try {
+          // Show loading
+          contentEl.innerHTML = `
+            <div class="loading">
+              <div class="spinner"></div>
+              <span>Loading...</span>
+            </div>
+          `;
+          
+          // Fetch data
+          const data = await module.fetchData(widget.config);
+          
+          // Render widget
+          module.render(contentEl, data);
+          
+        } catch (error) {
+          console.error(`Error loading widget ${widget.type}:`, error);
+          contentEl.innerHTML = `
+            <div class="error-state">
+              <i class="fas fa-exclamation-triangle"></i>
+              <p>Failed to load data</p>
+              <button class="btn btn-ghost" onclick="dashboard.loadWidgetData('${widgetId}')">
+                Retry
+              </button>
+            </div>
+          `;
+          this.showToast(`Failed to load ${module.name}`, 'error');
+        }
+      }
+      
+      removeWidget(widgetId) {
+        const widget = this.widgets.get(widgetId);
+        if (!widget) return;
+        
+        if (confirm(`Remove ${this.getWidgetModule(widget.type).name} widget?`)) {
+          this.grid.removeWidget(widget.element);
+          this.widgets.delete(widgetId);
+          this.saveLayout();
+          this.showToast('Widget removed', 'info');
+        }
+      }
+      
+      getWidgetModule(type) {
+        // Simple widget modules for demo
+        const modules = {
+          weather: {
+            name: 'Weather',
+            icon: 'fas fa-cloud-sun',
+            defaultSize: { w: 4, h: 3 },
+            
+            async fetchData(config = {}) {
+              const { location = 'New York', units = 'imperial' } = config;
+              const response = await fetch(`/api/weather?location=${encodeURIComponent(location)}&units=${units}`);
+              const result = await response.json();
+              if (!response.ok) throw new Error(result.error);
+              return result.data;
+            },
+            
+            render(container, data) {
+              const tempUnit = data.units === 'metric' ? '°C' : '°F';
+              
+              container.innerHTML = `
+                <div class="widget-data">
+                  <div class="widget-main">${data.temp}${tempUnit}</div>
+                  <div class="widget-sub">${data.condition}</div>
+                  <div class="widget-location">${data.location}</div>
+                  ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
+                  <div class="widget-details">
+                    <div class="detail-item">
+                      <span class="detail-label">Humidity</span>
+                      <span class="detail-value">${data.humidity}%</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Wind</span>
+                      <span class="detail-value">${data.wind} mph</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+          },
+          
+          crypto: {
+            name: 'Crypto',
+            icon: 'fab fa-bitcoin',
+            defaultSize: { w: 4, h: 3 },
+            
+            async fetchData(config = {}) {
+              const { coin = 'bitcoin', currency = 'usd' } = config;
+              const response = await fetch(`/api/crypto?coin=${coin}&currency=${currency}`);
+              const result = await response.json();
+              if (!response.ok) throw new Error(result.error);
+              return result.data;
+            },
+            
+            render(container, data) {
+              const changeClass = parseFloat(data.change24h) >= 0 ? 'positive' : 'negative';
+              const changeIcon = parseFloat(data.change24h) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+              const symbol = data.currency === 'usd' ? ' : data.currency.toUpperCase();
+              
+              container.innerHTML = `
+                <div class="widget-data">
+                  <div class="widget-main">${symbol}${parseFloat(data.price).toLocaleString()}</div>
+                  <div class="widget-sub">
+                    <i class="fas ${changeIcon}"></i>
+                    <span class="${changeClass}">${data.change24h}%</span>
+                  </div>
+                  <div class="widget-location">${data.coin.charAt(0).toUpperCase() + data.coin.slice(1)}</div>
+                  <div class="widget-details">
+                    <div class="detail-item">
+                      <span class="detail-label">Market Cap</span>
+                      <span class="detail-value">${this.formatNumber(data.marketCap)}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Volume</span>
+                      <span class="detail-value">${this.formatNumber(data.volume24h)}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            },
+            
+            formatNumber(num) {
+              if (!num) return 'N/A';
+              if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+              if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+              if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+              if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+              return num.toFixed(0);
+            }
+          },
+          
+          stocks: {
+            name: 'Stocks',
+            icon: 'fas fa-chart-line',
+            defaultSize: { w: 4, h: 3 },
+            
+            async fetchData(config = {}) {
+              const { symbol = 'AAPL' } = config;
+              const response = await fetch(`/api/stocks?symbol=${symbol.toUpperCase()}`);
+              const result = await response.json();
+              if (!response.ok) throw new Error(result.error);
+              return result.data;
+            },
+            
+            render(container, data) {
+              const changeClass = parseFloat(data.change) >= 0 ? 'positive' : 'negative';
+              const changeIcon = parseFloat(data.change) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+              
+              container.innerHTML = `
+                <div class="widget-data">
+                  <div class="widget-main">${parseFloat(data.price).toFixed(2)}</div>
+                  <div class="widget-sub">
+                    <i class="fas ${changeIcon}"></i>
+                    <span class="${changeClass}">${data.change} (${data.changePercent})</span>
+                  </div>
+                  <div class="widget-location">${data.symbol}</div>
+                  ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
+                  <div class="widget-details">
+                    <div class="detail-item">
+                      <span class="detail-label">Volume</span>
+                      <span class="detail-value">${this.formatVolume(data.volume)}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Prev Close</span>
+                      <span class="detail-value">${parseFloat(data.previousClose).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            },
+            
+            formatVolume(volume) {
+              if (!volume) return 'N/A';
+              if (volume >= 1e6) return (volume / 1e6).toFixed(1) + 'M';
+              if (volume >= 1e3) return (volume / 1e3).toFixed(1) + 'K';
+              return volume.toString();
+            }
+          },
+          
+          countdown: {
+            name: 'Countdown',
+            icon: 'fas fa-hourglass-half',
+            defaultSize: { w: 6, h: 3 },
+            
+            async fetchData(config = {}) {
+              const { title = 'New Year', targetDate = '2025-12-31T23:59:59' } = config;
+              const response = await fetch(`/api/countdown?title=${encodeURIComponent(title)}&targetDate=${encodeURIComponent(targetDate)}`);
+              const result = await response.json();
+              if (!response.ok) throw new Error(result.error);
+              return result.data;
+            },
+            
+            render(container, data) {
+              if (data.completed) {
+                container.innerHTML = `
+                  <div class="widget-data">
+                    <div class="widget-main">🎉</div>
+                    <div class="widget-sub">${data.title}</div>
+                    <div class="widget-location">Completed!</div>
+                  </div>
+                `;
+                return;
+              }
+              
+              const diff = new Date(data.targetDate) - new Date();
+              const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+              const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+              
+              container.innerHTML = `
+                <div class="widget-data">
+                  <div class="widget-sub">${data.title}</div>
+                  <div class="countdown-timer">
+                    <div class="countdown-unit">
+                      <span class="countdown-value">${days}</span>
+                      <span class="countdown-label">Days</span>
+                    </div>
+                    <div class="countdown-unit">
+                      <span class="countdown-value">${hours.toString().padStart(2, '0')}</span>
+                      <span class="countdown-label">Hours</span>
+                    </div>
+                    <div class="countdown-unit">
+                      <span class="countdown-value">${minutes.toString().padStart(2, '0')}</span>
+                      <span class="countdown-label">Min</span>
+                    </div>
+                    <div class="countdown-unit">
+                      <span class="countdown-value">${seconds.toString().padStart(2, '0')}</span>
+                      <span class="countdown-label">Sec</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+              
+              // Update every second
+              setTimeout(() => {
+                if (container.closest('.widget')) {
+                  this.render(container, data);
+                }
+              }, 1000);
+            }
+          },
+          
+          notes: {
+            name: 'Notes',
+            icon: 'fas fa-sticky-note',
+            defaultSize: { w: 4, h: 4 },
+            
+            async fetchData(config = {}) {
+              return { title: 'Notes', content: '' };
+            },
+            
+            render(container, data) {
+              container.innerHTML = `
+                <div style="height: 100%; display: flex; flex-direction: column;">
+                  <textarea 
+                    style="flex: 1; width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; font-family: inherit; font-size: 0.875rem; background: var(--background); color: var(--text); resize: none;"
+                    placeholder="Enter your notes here..."
+                    ${window.dashboard.demoMode ? 'readonly' : ''}
+                  >${window.dashboard.demoMode ? 'This is a demo notes widget.\nLogin to start taking notes!' : ''}</textarea>
+                </div>
+              `;
+            }
+          },
+          
+          todo: {
+            name: 'Todo',
+            icon: 'fas fa-tasks',
+            defaultSize: { w: 4, h: 4 },
+            
+            async fetchData(config = {}) {
+              return { title: 'Todo List', items: [] };
+            },
+            
+            render(container, data) {
+              container.innerHTML = `
+                <div style="height: 100%; display: flex; flex-direction: column; gap: 1rem;">
+                  <input 
+                    type="text" 
+                    placeholder="${window.dashboard.demoMode ? 'Login to add tasks' : 'Add new task...'}"
+                    style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); color: var(--text);"
+                    ${window.dashboard.demoMode ? 'readonly' : ''}
+                  >
+                  <div style="flex: 1; overflow-y: auto;">
+                    ${window.dashboard.demoMode ? `
+                      <div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
+                        <i class="fas fa-tasks" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                        Demo Todo Widget<br>
+                        Login to manage your tasks!
+                      </div>
+                    ` : '<div style="color: var(--text-muted); text-align: center; padding: 1rem;">No tasks yet</div>'}
+                  </div>
+                </div>
+              `;
+            }
+          }
+        };
+        
+        return modules[type];
+      }
+      
+      saveLayout() {
+        if (this.demoMode) return;
+        
+        const layout = [];
+        
+        this.widgets.forEach((widget, widgetId) => {
+          const gridNode = widget.element.gridstackNode;
+          if (gridNode) {
+            layout.push({
+              id: widgetId,
+              type: widget.type,
+              config: widget.config,
+              x: gridNode.x,
+              y: gridNode.y,
+              w: gridNode.w,
+              h: gridNode.h
+            });
+          }
+        });
+        
+        try {
+          localStorage.setItem('dashboard-layout', JSON.stringify(layout));
+        } catch (e) {
+          console.warn('Could not save layout to localStorage:', e);
+        }
+      }
+      
+      loadLayout() {
+        if (this.demoMode) return;
+        
+        try {
+          const saved = localStorage.getItem('dashboard-layout');
+          if (!saved) return;
+          
+          const layout = JSON.parse(saved);
+          
+          // Clear demo widgets first
+          this.widgets.forEach((widget) => {
+            this.grid.removeWidget(widget.element);
+          });
+          this.widgets.clear();
+          
+          // Sort by position to maintain order
+          layout.sort((a, b) => a.y - b.y || a.x - b.x);
+          
+          layout.forEach(item => {
+            this.addWidget(item.type, item.config, {
+              x: item.x,
+              y: item.y,
+              w: item.w,
+              h: item.h
+            });
+          });
+        } catch (error) {
+          console.error('Error loading layout:', error);
+          this.showToast('Error loading saved layout', 'error');
+        }
+      }
+      
+      resetLayout() {
+        // Remove all widgets
+        this.widgets.forEach((widget) => {
+          this.grid.removeWidget(widget.element);
+        });
+        this.widgets.clear();
+        
+        // Clear saved layout
+        try {
+          localStorage.removeItem('dashboard-layout');
+        } catch (e) {
+          console.warn('Could not clear layout from localStorage:', e);
+        }
+        
+        // Reset counter
+        this.widgetCounter = 0;
+        
+        this.showToast('Layout reset', 'info');
+      }
+      
+      showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        
+        toastContainer.appendChild(toast);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+          if (toast.parentNode) {
+            toast.style.opacity = '0';
+            setTimeout(() => {
+              if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+              }
+            }, 300);
+          }
+        }, 3000);
+      }
+      
+      // Auto-refresh widgets every 5 minutes (only non-demo widgets)
+      startAutoRefresh() {
+        setInterval(() => {
+          if (!this.demoMode) {
+            this.widgets.forEach((widget, widgetId) => {
+              // Skip notes and todo widgets from auto-refresh
+              if (!['notes', 'todo'].includes(widget.type)) {
+                this.loadWidgetData(widgetId);
+              }
+            });
+          }
+        }, 5 * 60 * 1000); // 5 minutes
+      }
+    }
+
+    // Initialize application when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
+      // Check if GridStack is available
       if (typeof GridStack === 'undefined') {
-        console.error('GridStack failed to load!');
+        console.error('GridStack is not available');
         document.body.innerHTML = `
           <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2rem;">
             <div>
               <h1 style="color: var(--error); margin-bottom: 1rem;">Error: GridStack library failed to load</h1>
               <p style="color: var(--text-muted);">Please check your internet connection and refresh the page.</p>
+              <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Refresh Page
+              </button>
             </div>
           </div>
         `;
         return;
       }
       
-      console.log('✅ GridStack loaded successfully:', GridStack.version || 'Unknown version');
+      try {
+        // Initialize authentication manager
+        window.authManager = new AuthManager();
+        
+        // Initialize dashboard
+        window.dashboard = new Dashboard();
+        
+        // Start auto-refresh
+        window.dashboard.startAutoRefresh();
+        
+        console.log('🚀 Enhanced Dashboard initialized successfully');
+        console.log('📊 Demo mode active - Login to unlock full functionality');
+        
+      } catch (error) {
+        console.error('Error initializing dashboard:', error);
+        document.body.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2rem;">
+            <div>
+              <h1 style="color: var(--error); margin-bottom: 1rem;">Error: Dashboard failed to initialize</h1>
+              <p style="color: var(--text-muted);">Please refresh the page to try again.</p>
+              <details style="margin-top: 1rem; text-align: left;">
+                <summary style="cursor: pointer;">Error details</summary>
+                <pre style="margin-top: 0.5rem; padding: 1rem; background: var(--surface); border-radius: 4px; font-size: 0.75rem;">${error.message}</pre>
+              </details>
+              <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Refresh Page
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    // Global error handler
+    window.addEventListener('error', (e) => {
+      console.error('Global error:', e.error);
+      if (window.dashboard) {
+        window.dashboard.showToast('An error occurred', 'error');
+      }
+    });
+
+    // Handle page visibility changes to pause/resume auto-refresh
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && window.dashboard && !window.dashboard.demoMode) {
+        // Refresh widgets when page becomes visible (only in authenticated mode)
+        setTimeout(() => {
+          window.dashboard.widgets.forEach((widget, widgetId) => {
+            if (!['notes', 'todo'].includes(widget.type)) {
+              window.dashboard.loadWidgetData(widgetId);
+            }
+          });
+        }, 1000);
+      }
+    });
+
+    // Handle ESC key to close modals
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        // Close auth modal
+        const authModal = document.getElementById('auth-modal');
+        if (authModal.style.display === 'flex') {
+          window.authManager.hideAuthModal();
+        }
+        
+        // Close widget picker
+        const widgetPicker = document.getElementById('widget-picker');
+        if (widgetPicker.style.display === 'flex') {
+          window.dashboard.hideWidgetPicker();
+        }
+      }
     });
   </script>
 </body>
