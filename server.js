@@ -21,6 +21,11 @@ function isCacheValid(timestamp) {
   return Date.now() - timestamp < CACHE_TTL;
 }
 
+// Helper function to get base URL
+function getBaseUrl(req) {
+  return `${req.protocol}://${req.get('host')}`;
+}
+
 // Weather API
 app.get('/api/weather', async (req, res) => {
   const { location = 'New York', units = 'imperial' } = req.query;
@@ -121,7 +126,7 @@ app.get('/api/crypto', async (req, res) => {
   }
 });
 
-// Stocks API (using free tier of API)
+// Stocks API (using demo data)
 app.get('/api/stocks', async (req, res) => {
   const { symbol = 'AAPL' } = req.query;
   const cacheKey = getCacheKey('stocks', { symbol });
@@ -208,14 +213,18 @@ app.get('/api/todo', (req, res) => {
   res.json({ data: todoData });
 });
 
-// ESP32 endpoint - returns first 4 widgets
+// ESP32 endpoint - returns first 4 widgets (FIXED for production)
 app.get('/api/esp32', async (req, res) => {
   try {
+    const baseUrl = getBaseUrl(req);
+    
     // Get data for the 4 main widgets
-    const weather = await fetch(`http://localhost:${PORT}/api/weather`).then(r => r.json());
-    const crypto = await fetch(`http://localhost:${PORT}/api/crypto`).then(r => r.json());
-    const stocks = await fetch(`http://localhost:${PORT}/api/stocks`).then(r => r.json());
-    const countdown = await fetch(`http://localhost:${PORT}/api/countdown`).then(r => r.json());
+    const [weather, crypto, stocks, countdown] = await Promise.all([
+      fetch(`${baseUrl}/api/weather`).then(r => r.json()),
+      fetch(`${baseUrl}/api/crypto`).then(r => r.json()),
+      fetch(`${baseUrl}/api/stocks`).then(r => r.json()),
+      fetch(`${baseUrl}/api/countdown`).then(r => r.json())
+    ]);
     
     res.json({
       widgets: [
