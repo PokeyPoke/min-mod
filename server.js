@@ -316,7 +316,7 @@ app.get('/api/search/cities', async (req, res) => {
   }
 });
 
-// Cryptocurrency search
+// Cryptocurrency search with top 100 first
 app.get('/api/search/crypto', async (req, res) => {
   const { q: query } = req.query;
   
@@ -329,12 +329,12 @@ app.get('/api/search/crypto', async (req, res) => {
     let coinsList = cache.get('crypto-list');
     
     if (!coinsList || !isCacheValid(coinsList.timestamp)) {
-      if (isRateLimited(`crypto-list-${req.ip}`, 2, 300000)) { // 2 calls per 5 min
-        // Fallback to demo data
+      if (isRateLimited(`crypto-list-${req.ip}`, 2, 300000)) {
+        // Fallback to comprehensive demo data
         coinsList = { data: null };
       } else {
         try {
-          const url = 'https://api.coingecko.com/api/v3/coins/list';
+          const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false';
           const response = await fetchWithRetry(url);
           const data = await response.json();
           coinsList = { data, timestamp: Date.now() };
@@ -347,31 +347,60 @@ app.get('/api/search/crypto', async (req, res) => {
     
     let coins;
     if (coinsList.data) {
-      coins = coinsList.data
-        .filter(coin => 
-          coin.name.toLowerCase().includes(query.toLowerCase()) ||
-          coin.symbol.toLowerCase().includes(query.toLowerCase())
-        )
-        .slice(0, 15)
-        .map(coin => ({
-          id: coin.id,
-          name: coin.name,
-          symbol: coin.symbol.toUpperCase()
-        }));
+      // Filter by search query
+      const filtered = coinsList.data.filter(coin => 
+        coin.name.toLowerCase().includes(query.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      // Sort: exact matches first, then by market cap
+      filtered.sort((a, b) => {
+        const aExact = a.symbol.toLowerCase() === query.toLowerCase() || a.name.toLowerCase() === query.toLowerCase();
+        const bExact = b.symbol.toLowerCase() === query.toLowerCase() || b.name.toLowerCase() === query.toLowerCase();
+        
+        if (aExact && !bExact) return -1;
+        if (bExact && !aExact) return 1;
+        
+        return b.market_cap_rank - a.market_cap_rank; // Lower rank = higher position
+      });
+      
+      coins = filtered.slice(0, 50).map(coin => ({
+        id: coin.id,
+        name: coin.name,
+        symbol: coin.symbol.toUpperCase(),
+        marketCapRank: coin.market_cap_rank || 999
+      }));
     } else {
-      // Demo cryptocurrency data
-      coins = [
-        { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC' },
-        { id: 'ethereum', name: 'Ethereum', symbol: 'ETH' },
-        { id: 'cardano', name: 'Cardano', symbol: 'ADA' },
-        { id: 'polkadot', name: 'Polkadot', symbol: 'DOT' },
-        { id: 'chainlink', name: 'Chainlink', symbol: 'LINK' },
-        { id: 'litecoin', name: 'Litecoin', symbol: 'LTC' },
-        { id: 'stellar', name: 'Stellar', symbol: 'XLM' },
-        { id: 'polygon', name: 'Polygon', symbol: 'MATIC' },
-        { id: 'solana', name: 'Solana', symbol: 'SOL' },
-        { id: 'avalanche-2', name: 'Avalanche', symbol: 'AVAX' }
-      ].filter(crypto => 
+      // Comprehensive demo cryptocurrency data - top 100 style
+      const topCryptos = [
+        { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', marketCapRank: 1 },
+        { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', marketCapRank: 2 },
+        { id: 'tether', name: 'Tether', symbol: 'USDT', marketCapRank: 3 },
+        { id: 'bnb', name: 'BNB', symbol: 'BNB', marketCapRank: 4 },
+        { id: 'solana', name: 'Solana', symbol: 'SOL', marketCapRank: 5 },
+        { id: 'usd-coin', name: 'USD Coin', symbol: 'USDC', marketCapRank: 6 },
+        { id: 'xrp', name: 'XRP', symbol: 'XRP', marketCapRank: 7 },
+        { id: 'cardano', name: 'Cardano', symbol: 'ADA', marketCapRank: 8 },
+        { id: 'avalanche-2', name: 'Avalanche', symbol: 'AVAX', marketCapRank: 9 },
+        { id: 'dogecoin', name: 'Dogecoin', symbol: 'DOGE', marketCapRank: 10 },
+        { id: 'chainlink', name: 'Chainlink', symbol: 'LINK', marketCapRank: 11 },
+        { id: 'polkadot', name: 'Polkadot', symbol: 'DOT', marketCapRank: 12 },
+        { id: 'polygon', name: 'Polygon', symbol: 'MATIC', marketCapRank: 13 },
+        { id: 'litecoin', name: 'Litecoin', symbol: 'LTC', marketCapRank: 14 },
+        { id: 'internet-computer', name: 'Internet Computer', symbol: 'ICP', marketCapRank: 15 },
+        { id: 'stellar', name: 'Stellar', symbol: 'XLM', marketCapRank: 16 },
+        { id: 'cosmos', name: 'Cosmos', symbol: 'ATOM', marketCapRank: 17 },
+        { id: 'ethereum-classic', name: 'Ethereum Classic', symbol: 'ETC', marketCapRank: 18 },
+        { id: 'vechain', name: 'VeChain', symbol: 'VET', marketCapRank: 19 },
+        { id: 'filecoin', name: 'Filecoin', symbol: 'FIL', marketCapRank: 20 },
+        { id: 'algorand', name: 'Algorand', symbol: 'ALGO', marketCapRank: 21 },
+        { id: 'hedera-hashgraph', name: 'Hedera', symbol: 'HBAR', marketCapRank: 22 },
+        { id: 'the-sandbox', name: 'The Sandbox', symbol: 'SAND', marketCapRank: 23 },
+        { id: 'decentraland', name: 'Decentraland', symbol: 'MANA', marketCapRank: 24 },
+        { id: 'axie-infinity', name: 'Axie Infinity', symbol: 'AXS', marketCapRank: 25 }
+      ];
+      
+      coins = topCryptos.filter(crypto => 
         crypto.name.toLowerCase().includes(query.toLowerCase()) ||
         crypto.symbol.toLowerCase().includes(query.toLowerCase())
       );
@@ -384,7 +413,7 @@ app.get('/api/search/crypto', async (req, res) => {
   }
 });
 
-// Stock search (Alpha Vantage optimized)
+// Stock search (Alpha Vantage optimized) with more comprehensive demo data
 app.get('/api/search/stocks', async (req, res) => {
   const { q: query } = req.query;
   
@@ -407,7 +436,7 @@ app.get('/api/search/stocks', async (req, res) => {
         throw new Error('API call frequency limit reached');
       }
       
-      const stocks = (data.bestMatches || []).slice(0, 12).map(match => ({
+      const stocks = (data.bestMatches || []).slice(0, 25).map(match => ({
         symbol: match['1. symbol'],
         name: match['2. name'],
         type: match['3. type'],
@@ -416,24 +445,76 @@ app.get('/api/search/stocks', async (req, res) => {
       
       res.json({ data: stocks });
     } else {
-      // Comprehensive demo stock data
+      // Much more comprehensive demo stock data
       const demoStocks = [
+        // Tech Giants
         { symbol: 'AAPL', name: 'Apple Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'GOOGL', name: 'Alphabet Inc. Class A', type: 'Equity', region: 'United States' },
+        { symbol: 'GOOG', name: 'Alphabet Inc. Class C', type: 'Equity', region: 'United States' },
         { symbol: 'MSFT', name: 'Microsoft Corporation', type: 'Equity', region: 'United States' },
         { symbol: 'AMZN', name: 'Amazon.com Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'TSLA', name: 'Tesla Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'NVDA', name: 'NVIDIA Corporation', type: 'Equity', region: 'United States' },
         { symbol: 'META', name: 'Meta Platforms Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'NFLX', name: 'Netflix Inc.', type: 'Equity', region: 'United States' },
+        
+        // Other Tech
         { symbol: 'AMD', name: 'Advanced Micro Devices Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'INTC', name: 'Intel Corporation', type: 'Equity', region: 'United States' },
         { symbol: 'CRM', name: 'Salesforce Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'ORCL', name: 'Oracle Corporation', type: 'Equity', region: 'United States' },
+        { symbol: 'ADBE', name: 'Adobe Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'CSCO', name: 'Cisco Systems Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'IBM', name: 'International Business Machines Corp.', type: 'Equity', region: 'United States' },
         { symbol: 'UBER', name: 'Uber Technologies Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'LYFT', name: 'Lyft Inc.', type: 'Equity', region: 'United States' },
         { symbol: 'SPOT', name: 'Spotify Technology S.A.', type: 'Equity', region: 'United States' },
-        { symbol: 'SQ', name: 'Block Inc.', type: 'Equity', region: 'United States' }
+        { symbol: 'SQ', name: 'Block Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'PYPL', name: 'PayPal Holdings Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'SHOP', name: 'Shopify Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'TWTR', name: 'Twitter Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'SNAP', name: 'Snap Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'ZOOM', name: 'Zoom Video Communications Inc.', type: 'Equity', region: 'United States' },
+        
+        // Finance
+        { symbol: 'JPM', name: 'JPMorgan Chase & Co.', type: 'Equity', region: 'United States' },
+        { symbol: 'BAC', name: 'Bank of America Corp.', type: 'Equity', region: 'United States' },
+        { symbol: 'WFC', name: 'Wells Fargo & Co.', type: 'Equity', region: 'United States' },
+        { symbol: 'GS', name: 'Goldman Sachs Group Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'MS', name: 'Morgan Stanley', type: 'Equity', region: 'United States' },
+        { symbol: 'C', name: 'Citigroup Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'V', name: 'Visa Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'MA', name: 'Mastercard Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'AXP', name: 'American Express Co.', type: 'Equity', region: 'United States' },
+        
+        // Healthcare
+        { symbol: 'JNJ', name: 'Johnson & Johnson', type: 'Equity', region: 'United States' },
+        { symbol: 'PFE', name: 'Pfizer Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'MRNA', name: 'Moderna Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'ABBV', name: 'AbbVie Inc.', type: 'Equity', region: 'United States' },
+        
+        // Consumer
+        { symbol: 'KO', name: 'Coca-Cola Co.', type: 'Equity', region: 'United States' },
+        { symbol: 'PEP', name: 'PepsiCo Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'WMT', name: 'Walmart Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'TGT', name: 'Target Corp.', type: 'Equity', region: 'United States' },
+        { symbol: 'HD', name: 'Home Depot Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'LOW', name: 'Lowe\'s Companies Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'NKE', name: 'Nike Inc.', type: 'Equity', region: 'United States' },
+        { symbol: 'SBUX', name: 'Starbucks Corp.', type: 'Equity', region: 'United States' },
+        { symbol: 'MCD', name: 'McDonald\'s Corp.', type: 'Equity', region: 'United States' },
+        
+        // Energy
+        { symbol: 'XOM', name: 'Exxon Mobil Corp.', type: 'Equity', region: 'United States' },
+        { symbol: 'CVX', name: 'Chevron Corp.', type: 'Equity', region: 'United States' },
+        
+        // Aerospace
+        { symbol: 'BA', name: 'Boeing Co.', type: 'Equity', region: 'United States' },
+        { symbol: 'LMT', name: 'Lockheed Martin Corp.', type: 'Equity', region: 'United States' },
+        
+        // Auto
+        { symbol: 'F', name: 'Ford Motor Co.', type: 'Equity', region: 'United States' },
+        { symbol: 'GM', name: 'General Motors Co.', type: 'Equity', region: 'United States' }
       ].filter(stock => 
         stock.name.toLowerCase().includes(query.toLowerCase()) ||
         stock.symbol.toLowerCase().includes(query.toLowerCase())
