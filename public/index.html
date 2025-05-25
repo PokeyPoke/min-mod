@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
   
-  <!-- GridStack CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack/8.4.0/gridstack.min.css">
+  <!-- GridStack CSS - Updated to working version -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack.min.css">
   
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -131,8 +131,17 @@
     <span>Loading...</span>
   </div>
 
-  <!-- Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack/8.4.0/gridstack-all.min.js"></script>
+  <!-- Scripts - GridStack MUST load before app.js -->
+  <script src="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack-all.js"></script>
+  <script>
+    // Ensure GridStack is loaded before proceeding
+    if (typeof GridStack === 'undefined') {
+      console.error('GridStack failed to load!');
+      document.body.innerHTML = '<div style="padding: 20px; text-align: center;"><h1>Error: GridStack library failed to load</h1><p>Please check your internet connection and refresh the page.</p></div>';
+    } else {
+      console.log('GridStack loaded successfully:', GridStack.version);
+    }
+  </script>
   <script src="modules.js"></script>
   <script src="app.js"></script>
 </body>
