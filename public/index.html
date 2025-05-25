@@ -148,6 +148,60 @@
       font-size: 1rem;
     }
 
+    /* ===== USER MENU ===== */
+    .user-menu {
+      position: relative;
+    }
+
+    .user-button {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-button:hover {
+      background: var(--border-light);
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      min-width: 200px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .user-dropdown.show {
+      display: block;
+    }
+
+    .user-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .user-dropdown a:hover {
+      background: var(--border-light);
+    }
+
     /* ===== WIDGETS ===== */
     .widget {
       background: var(--surface-elevated);
@@ -230,187 +284,6 @@
       overflow: auto;
     }
 
-    /* ===== WIDGET SPECIFIC STYLES ===== */
-    .weather-widget {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      color: white;
-    }
-
-    .weather-widget .widget-header {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .crypto-widget {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: white;
-    }
-
-    .crypto-widget .widget-header {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .stocks-widget {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-    }
-
-    .stocks-widget .widget-header {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .countdown-widget {
-      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      color: white;
-    }
-
-    .countdown-widget .widget-header {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    /* ===== WIDGET DATA LAYOUTS ===== */
-    .widget-data {
-      text-align: center;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .widget-main {
-      font-size: 2rem;
-      font-weight: 300;
-      margin-bottom: 0.5rem;
-    }
-
-    .widget-sub {
-      font-size: 0.875rem;
-      opacity: 0.8;
-    }
-
-    .widget-location {
-      font-size: 0.875rem;
-      opacity: 0.9;
-      margin-top: 0.25rem;
-    }
-
-    .widget-details {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.5rem;
-      margin-top: 1rem;
-      font-size: 0.75rem;
-    }
-
-    .detail-item {
-      text-align: center;
-    }
-
-    .detail-label {
-      opacity: 0.7;
-      display: block;
-    }
-
-    .detail-value {
-      font-weight: 600;
-      font-size: 0.875rem;
-    }
-
-    /* ===== COUNTDOWN SPECIFIC ===== */
-    .countdown-timer {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.5rem;
-      margin: 1rem 0;
-    }
-
-    .countdown-unit {
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 0.5rem;
-      border-radius: 4px;
-    }
-
-    .countdown-value {
-      display: block;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    .countdown-label {
-      font-size: 0.75rem;
-      opacity: 0.8;
-    }
-
-    /* ===== NOTES & TODO WIDGETS ===== */
-    .notes-textarea {
-      width: 100%;
-      height: 100px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.75rem;
-      font-family: inherit;
-      font-size: 0.875rem;
-      background: var(--background);
-      color: var(--text);
-      resize: vertical;
-    }
-
-    .notes-textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .todo-input {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--background);
-      color: var(--text);
-      margin-bottom: 0.75rem;
-    }
-
-    .todo-input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .todo-list {
-      list-style: none;
-      max-height: 120px;
-      overflow-y: auto;
-    }
-
-    .todo-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .todo-item:last-child {
-      border-bottom: none;
-    }
-
-    .todo-checkbox {
-      accent-color: var(--primary);
-    }
-
-    .todo-text {
-      flex: 1;
-      font-size: 0.875rem;
-    }
-
-    .todo-item.completed .todo-text {
-      text-decoration: line-through;
-      opacity: 0.6;
-    }
-
     /* ===== MODALS ===== */
     .modal {
       position: fixed;
@@ -477,6 +350,190 @@
       flex: 1;
       overflow-y: auto;
     }
+
+    /* ===== SEARCH DROPDOWNS ===== */
+    .search-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .search-dropdown-large {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .search-dropdown-medium {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .selected-items {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+      padding: 2rem;
+    }
+
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .error-state i {
+      font-size: 2rem;
+      color: var(--error);
+    }
+
+    .esp32-device {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ===== FORMS ===== */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--text);
+    }
+
+    .form-input {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--background);
+      color: var(--text);
+      font-size: 0.875rem;
+      transition: var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    /* ===== AUTH STYLES ===== */
+    .auth-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      background: var(--background);
+    }
+
+    .auth-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-header h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .auth-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== UTILITY CLASSES ===== */
+    .hidden { display: none !important; }
+    .positive { color: var(--success); }
+    .negative { color: var(--error); }
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
 
     /* ===== WIDGET PICKER GRID ===== */
     .widget-grid {
@@ -598,25 +655,6 @@
       animation: spin 1s linear infinite;
     }
 
-    .loading {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      color: var(--text-muted);
-    }
-
-    /* ===== UTILITY CLASSES ===== */
-    .hidden { display: none !important; }
-    .positive { color: var(--success); }
-    .negative { color: var(--error); }
-    .text-center { text-align: center; }
-    .text-muted { color: var(--text-muted); }
-
     /* ===== RESPONSIVE DESIGN ===== */
     @media (max-width: 768px) {
       .header {
@@ -640,6 +678,10 @@
         padding: 1rem;
       }
       
+      .auth-card {
+        padding: 1.5rem;
+      }
+      
       .toast-container {
         left: 1rem;
         right: 1rem;
@@ -649,23 +691,51 @@
         max-width: none;
       }
     }
-
-    /* ===== GRIDSTACK OVERRIDES ===== */
-    .grid-stack > .grid-stack-item > .grid-stack-item-content {
-      border-radius: var(--radius);
-      overflow: visible;
-    }
-
-    .grid-stack > .grid-stack-item.grid-stack-placeholder > .placeholder-content {
-      background: var(--primary);
-      opacity: 0.2;
-      border-radius: var(--radius);
-    }
   </style>
 </head>
 <body data-theme="light">
+  <!-- ===== AUTHENTICATION SCREEN ===== -->
+  <div id="auth-screen" class="auth-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo" style="justify-content: center; margin-bottom: 1rem;">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Dashboard</span>
+        </div>
+        <h1 id="auth-title">Sign In</h1>
+        <p id="auth-subtitle">Access your personalized dashboard</p>
+      </div>
+      
+      <form id="auth-form" class="auth-form">
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+        </div>
+        
+        <div class="form-group hidden" id="confirm-password-group">
+          <label class="form-label" for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password">
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-large" id="auth-submit">
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Sign In</span>
+        </button>
+      </form>
+      
+      <div class="auth-footer">
+        <p id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch">Sign up</a></p>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== MAIN DASHBOARD ===== -->
-  <div id="dashboard-screen">
+  <div id="dashboard-screen" class="hidden">
     <!-- Header -->
     <header class="header">
       <div class="header-content">
@@ -687,6 +757,24 @@
           <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
             <i class="fas fa-refresh"></i>
           </button>
+          
+          <div class="user-menu">
+            <button class="user-button" id="user-menu-button">
+              <i class="fas fa-user"></i>
+              <span id="user-email">user@example.com</span>
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="user-dropdown" id="user-dropdown">
+              <a href="#" id="manage-esp32">
+                <i class="fas fa-microchip"></i>
+                <span>Manage ESP32 Devices</span>
+              </a>
+              <a href="#" id="logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -698,7 +786,7 @@
       </div>
       
       <!-- Empty State -->
-      <div id="empty-state" class="empty-state">
+      <div id="empty-state" class="empty-state hidden">
         <div class="empty-content">
           <i class="fas fa-plus-circle"></i>
           <h2>Your Dashboard Awaits</h2>
@@ -748,6 +836,14 @@
             <p>Stock market data</p>
           </div>
           
+          <div class="widget-option" data-type="sports">
+            <div class="widget-icon">
+              <i class="fas fa-futbol"></i>
+            </div>
+            <h3>Sports</h3>
+            <p>Live scores and schedules</p>
+          </div>
+          
           <div class="widget-option" data-type="countdown">
             <div class="widget-icon">
               <i class="fas fa-hourglass-half"></i>
@@ -776,6 +872,62 @@
     </div>
   </div>
 
+  <!-- ===== WIDGET CONFIGURATION MODAL ===== -->
+  <div id="widget-config-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="config-title">Configure Widget</h2>
+        <button class="modal-close" id="close-config">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div id="config-content" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+          <!-- Dynamic configuration forms will be inserted here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ESP32 MANAGEMENT MODAL ===== -->
+  <div id="esp32-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ESP32 Device Management</h2>
+        <button class="modal-close" id="close-esp32">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="form-group">
+            <label class="form-label">Registered Devices</label>
+            <div id="esp32-devices" style="max-height: 200px; overflow-y: auto;">
+              <!-- Devices will be listed here -->
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="device-name">Add New Device</label>
+            <input type="text" id="device-name" class="form-input" placeholder="Device name (e.g., Living Room Display)">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="device-id">Device ID</label>
+            <input type="text" id="device-id" class="form-input" placeholder="ESP32 device unique ID">
+          </div>
+          
+          <button id="add-esp32" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Register Device
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== TOAST CONTAINER ===== -->
   <div id="toast-container" class="toast-container"></div>
 
@@ -783,861 +935,29 @@
   <script src="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack-all.js"></script>
   
   <!-- ===== WIDGET MODULES (Load before app.js) ===== -->
-  <script>
-    // All widget modules in one file for simplicity
-    const WidgetModules = {
-      weather: {
-        name: 'Weather',
-        icon: 'fas fa-cloud-sun',
-        defaultSize: { w: 4, h: 3 },
-        
-        async fetchData(config = {}) {
-          const { location = 'New York', units = 'imperial' } = config;
-          try {
-            const response = await fetch(`/api/weather?location=${encodeURIComponent(location)}&units=${units}`);
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.error);
-            return result.data;
-          } catch (error) {
-            // Fallback demo data
-            return {
-              location: location,
-              temp: Math.floor(Math.random() * 35) + 45,
-              condition: 'Clear',
-              humidity: Math.floor(Math.random() * 40) + 30,
-              wind: Math.floor(Math.random() * 20) + 2,
-              units: units,
-              demo: true
-            };
-          }
-        },
-        
-        render(container, data) {
-          const tempUnit = data.units === 'metric' ? '°C' : '°F';
-          
-          container.innerHTML = `
-            <div class="widget-data">
-              <div class="widget-main">${data.temp}${tempUnit}</div>
-              <div class="widget-sub">${data.condition}</div>
-              <div class="widget-location">${data.location}</div>
-              ${data.demo ? '<div class="text-muted">Demo Data</div>' : ''}
-              <div class="widget-details">
-                <div class="detail-item">
-                  <span class="detail-label">Humidity</span>
-                  <span class="detail-value">${data.humidity}%</span>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Wind</span>
-                  <span class="detail-value">${data.wind} mph</span>
-                </div>
-              </div>
-            </div>
-          `;
-        },
-        
-        configure() {
-          const location = prompt('Enter city name:', 'New York');
-          if (!location) return null;
-          
-          const units = confirm('Use Celsius? (Cancel for Fahrenheit)') ? 'metric' : 'imperial';
-          return { location, units };
-        }
-      },
-
-      crypto: {
-        name: 'Crypto',
-        icon: 'fab fa-bitcoin',
-        defaultSize: { w: 4, h: 3 },
-        
-        async fetchData(config = {}) {
-          const { coin = 'bitcoin', currency = 'usd' } = config;
-          try {
-            const response = await fetch(`/api/crypto?coin=${coin}&currency=${currency}`);
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.error);
-            return result.data;
-          } catch (error) {
-            // Fallback demo data
-            return {
-              coin: coin,
-              price: (Math.random() * 50000 + 10000).toFixed(2),
-              change24h: ((Math.random() - 0.5) * 10).toFixed(2),
-              marketCap: Math.floor(Math.random() * 1000000000000),
-              volume24h: Math.floor(Math.random() * 10000000000),
-              currency: currency,
-              demo: true
-            };
-          }
-        },
-        
-        render(container, data) {
-          const changeClass = parseFloat(data.change24h) >= 0 ? 'positive' : 'negative';
-          const changeIcon = parseFloat(data.change24h) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-          const symbol = data.currency === 'usd' ? '$' : data.currency.toUpperCase();
-          
-          container.innerHTML = `
-            <div class="widget-data">
-              <div class="widget-main">${symbol}${parseFloat(data.price).toLocaleString()}</div>
-              <div class="widget-sub">
-                <i class="fas ${changeIcon}"></i>
-                <span class="${changeClass}">${data.change24h}%</span>
-              </div>
-              <div class="widget-location">${data.coin.charAt(0).toUpperCase() + data.coin.slice(1)}</div>
-              ${data.demo ? '<div class="text-muted">Demo Data</div>' : ''}
-              <div class="widget-details">
-                <div class="detail-item">
-                  <span class="detail-label">Market Cap</span>
-                  <span class="detail-value">${this.formatNumber(data.marketCap)}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Volume</span>
-                  <span class="detail-value">${this.formatNumber(data.volume24h)}</span>
-                </div>
-              </div>
-            </div>
-          `;
-        },
-        
-        configure() {
-          const coin = prompt('Enter cryptocurrency (e.g., bitcoin, ethereum):', 'bitcoin');
-          if (!coin) return null;
-          
-          const currency = prompt('Enter currency (usd, eur, btc):', 'usd');
-          return { coin: coin.toLowerCase(), currency: currency.toLowerCase() };
-        },
-        
-        formatNumber(num) {
-          if (!num) return 'N/A';
-          if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
-          if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
-          if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
-          if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
-          return num.toFixed(0);
-        }
-      },
-
-      stocks: {
-        name: 'Stocks',
-        icon: 'fas fa-chart-line',
-        defaultSize: { w: 4, h: 3 },
-        
-        async fetchData(config = {}) {
-          const { symbol = 'AAPL' } = config;
-          try {
-            const response = await fetch(`/api/stocks?symbol=${symbol.toUpperCase()}`);
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.error);
-            return result.data;
-          } catch (error) {
-            // Fallback demo data
-            const basePrice = 150 + Math.random() * 200;
-            const changePercent = (Math.random() - 0.5) * 8;
-            const change = (basePrice * changePercent / 100);
-            const previousClose = basePrice - change;
-            
-            return {
-              symbol: symbol.toUpperCase(),
-              price: basePrice.toFixed(2),
-              change: change.toFixed(2),
-              changePercent: `${changePercent.toFixed(2)}%`,
-              volume: Math.floor(Math.random() * 50000000) + 1000000,
-              previousClose: previousClose.toFixed(2),
-              demo: true
-            };
-          }
-        },
-        
-        render(container, data) {
-          const changeClass = parseFloat(data.change) >= 0 ? 'positive' : 'negative';
-          const changeIcon = parseFloat(data.change) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-          
-          container.innerHTML = `
-            <div class="widget-data">
-              <div class="widget-main">${parseFloat(data.price).toFixed(2)}</div>
-              <div class="widget-sub">
-                <i class="fas ${changeIcon}"></i>
-                <span class="${changeClass}">${data.change} (${data.changePercent})</span>
-              </div>
-              <div class="widget-location">${data.symbol}</div>
-              ${data.demo ? '<div class="text-muted">Demo Data</div>' : ''}
-              <div class="widget-details">
-                <div class="detail-item">
-                  <span class="detail-label">Volume</span>
-                  <span class="detail-value">${this.formatVolume(data.volume)}</span>
-                </div>
-                <div class="detail-item">
-                  <span class="detail-label">Prev Close</span>
-                  <span class="detail-value">${parseFloat(data.previousClose).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-          `;
-        },
-        
-        configure() {
-          const symbol = prompt('Enter stock symbol (e.g., AAPL, GOOGL):', 'AAPL');
-          return symbol ? { symbol: symbol.toUpperCase() } : null;
-        },
-        
-        formatVolume(volume) {
-          if (!volume) return 'N/A';
-          if (volume >= 1e6) return (volume / 1e6).toFixed(1) + 'M';
-          if (volume >= 1e3) return (volume / 1e3).toFixed(1) + 'K';
-          return volume.toString();
-        }
-      },
-
-      countdown: {
-        name: 'Countdown',
-        icon: 'fas fa-hourglass-half',
-        defaultSize: { w: 6, h: 3 },
-        
-        async fetchData(config = {}) {
-          const { title = 'New Year', targetDate = '2025-12-31T23:59:59' } = config;
-          try {
-            const response = await fetch(`/api/countdown?title=${encodeURIComponent(title)}&targetDate=${encodeURIComponent(targetDate)}`);
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.error);
-            return result.data;
-          } catch (error) {
-            // Fallback demo data
-            return {
-              title: title,
-              targetDate: targetDate,
-              completed: false
-            };
-          }
-        },
-        
-        render(container, data) {
-          if (data.completed) {
-            container.innerHTML = `
-              <div class="widget-data">
-                <div class="widget-main">🎉</div>
-                <div class="widget-sub">${data.title}</div>
-                <div class="widget-location">Completed!</div>
-              </div>
-            `;
-            return;
-          }
-          
-          const diff = new Date(data.targetDate) - new Date();
-          if (diff <= 0) {
-            container.innerHTML = `
-              <div class="widget-data">
-                <div class="widget-main">🎉</div>
-                <div class="widget-sub">${data.title}</div>
-                <div class="widget-location">Time's up!</div>
-              </div>
-            `;
-            return;
-          }
-          
-          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-          
-          container.innerHTML = `
-            <div class="widget-data">
-              <div class="widget-sub">${data.title}</div>
-              <div class="countdown-timer">
-                <div class="countdown-unit">
-                  <span class="countdown-value">${days}</span>
-                  <span class="countdown-label">Days</span>
-                </div>
-                <div class="countdown-unit">
-                  <span class="countdown-value">${hours.toString().padStart(2, '0')}</span>
-                  <span class="countdown-label">Hours</span>
-                </div>
-                <div class="countdown-unit">
-                  <span class="countdown-value">${minutes.toString().padStart(2, '0')}</span>
-                  <span class="countdown-label">Min</span>
-                </div>
-                <div class="countdown-unit">
-                  <span class="countdown-value">${seconds.toString().padStart(2, '0')}</span>
-                  <span class="countdown-label">Sec</span>
-                </div>
-              </div>
-            </div>
-          `;
-          
-          // Update every second
-          setTimeout(() => {
-            if (container.closest('.widget')) {
-              this.render(container, data);
-            }
-          }, 1000);
-        },
-        
-        configure() {
-          const title = prompt('Enter event title:', 'New Year');
-          if (!title) return null;
-          
-          const dateStr = prompt('Enter target date (YYYY-MM-DD):', '2025-12-31');
-          if (!dateStr) return null;
-          
-          try {
-            const targetDate = new Date(dateStr + 'T23:59:59').toISOString();
-            return { title, targetDate };
-          } catch (error) {
-            alert('Invalid date format. Please use YYYY-MM-DD format.');
-            return null;
-          }
-        }
-      },
-
-      notes: {
-        name: 'Notes',
-        icon: 'fas fa-sticky-note',
-        defaultSize: { w: 4, h: 4 },
-        
-        async fetchData(config = {}) {
-          const { title = 'Notes', content = '' } = config;
-          return { title, content, showWordCount: true, autoSave: true };
-        },
-        
-        render(container, data) {
-          const noteId = 'note-' + Math.random().toString(36).substr(2, 9);
-          
-          container.innerHTML = `
-            <div class="notes-widget-content">
-              <textarea 
-                class="notes-textarea" 
-                placeholder="Enter your notes here..."
-                data-note-id="${noteId}"
-              >${data.content || ''}</textarea>
-              <div class="notes-stats">
-                <span id="word-count-${noteId}">0 words</span>
-              </div>
-            </div>
-          `;
-          
-          const textarea = container.querySelector('.notes-textarea');
-          const wordCount = container.querySelector(`#word-count-${noteId}`);
-          
-          const updateStats = () => {
-            const words = textarea.value.trim() ? textarea.value.trim().split(/\s+/).length : 0;
-            wordCount.textContent = `${words} words`;
-          };
-          
-          textarea.addEventListener('input', updateStats);
-          updateStats();
-        },
-        
-        configure() {
-          const title = prompt('Enter note title:', 'Notes');
-          return title ? { title } : null;
-        }
-      },
-
-      todo: {
-        name: 'Todo',
-        icon: 'fas fa-tasks',
-        defaultSize: { w: 4, h: 4 },
-        
-        async fetchData(config = {}) {
-          const { title = 'Todo List' } = config;
-          return { title, items: [], showCompleted: true, maxItems: 10 };
-        },
-        
-        render(container, data) {
-          const todoId = 'todo-' + Math.random().toString(36).substr(2, 9);
-          let todos = [];
-          
-          const renderTodos = () => {
-            const todoList = todos.map((todo, index) => `
-              <div class="todo-item ${todo.completed ? 'completed' : ''}">
-                <input 
-                  type="checkbox" 
-                  class="todo-checkbox" 
-                  ${todo.completed ? 'checked' : ''}
-                  data-index="${index}"
-                >
-                <span class="todo-text">${todo.text}</span>
-                <button class="widget-action delete-todo" data-index="${index}">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            `).join('');
-            
-            return `
-              <div class="todo-widget-content">
-                <div class="todo-input-container">
-                  <input 
-                    type="text" 
-                    class="todo-input" 
-                    placeholder="Add new task..."
-                    data-todo-id="${todoId}"
-                  >
-                </div>
-                <div class="todo-list">
-                  ${todoList}
-                </div>
-                <div class="todo-stats">
-                  ${todos.filter(t => !t.completed).length} active, 
-                  ${todos.filter(t => t.completed).length} completed
-                </div>
-              </div>
-            `;
-          };
-          
-          container.innerHTML = renderTodos();
-          
-          // Add event listeners
-          const input = container.querySelector('.todo-input');
-          
-          // Add new todo
-          input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && input.value.trim()) {
-              todos.push({ text: input.value.trim(), completed: false });
-              input.value = '';
-              container.innerHTML = renderTodos();
-              this.render(container, data); // Re-render to reattach events
-            }
-          });
-          
-          // Toggle completion and delete
-          container.addEventListener('change', (e) => {
-            if (e.target.classList.contains('todo-checkbox')) {
-              const index = parseInt(e.target.dataset.index);
-              todos[index].completed = e.target.checked;
-              container.innerHTML = renderTodos();
-              this.render(container, data);
-            }
-          });
-          
-          container.addEventListener('click', (e) => {
-            if (e.target.closest('.delete-todo')) {
-              const index = parseInt(e.target.closest('.delete-todo').dataset.index);
-              todos.splice(index, 1);
-              container.innerHTML = renderTodos();
-              this.render(container, data);
-            }
-          });
-        },
-        
-        configure() {
-          const title = prompt('Enter todo list title:', 'Todo List');
-          return title ? { title } : null;
-        }
-      }
-    };
-
-    // Export for use in app.js
-    window.WidgetModules = WidgetModules;
-  </script>
+  <script src="modules.js"></script>
   
   <!-- ===== DASHBOARD APPLICATION ===== -->
-  <script>
-    // Main Dashboard Application
-    class Dashboard {
-      constructor() {
-        this.grid = null;
-        this.widgets = new Map();
-        this.theme = 'light';
-        this.widgetCounter = 0;
-        this.init();
-      }
-      
-      init() {
-        this.initializeTheme();
-        this.initializeGrid();
-        this.setupEventListeners();
-        this.checkEmptyState();
-        this.addDefaultWidgets();
-      }
-      
-      initializeTheme() {
-        document.body.dataset.theme = this.theme;
-        const themeIcon = document.querySelector('#theme-toggle i');
-        if (themeIcon) {
-          themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-      }
-      
-      initializeGrid() {
-        this.grid = GridStack.init({
-          cellHeight: 100,
-          margin: 16,
-          float: false,
-          animate: true,
-          resizable: {
-            handles: 'se'
-          },
-          draggable: {
-            handle: '.widget-header'
-          }
-        });
-      }
-      
-      setupEventListeners() {
-        // Theme toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-          themeToggle.addEventListener('click', () => {
-            this.toggleTheme();
-          });
-        }
-        
-        // Add widget buttons
-        const addWidget = document.getElementById('add-widget');
-        if (addWidget) {
-          addWidget.addEventListener('click', () => {
-            this.showWidgetPicker();
-          });
-        }
-        
-        const addFirstWidget = document.getElementById('add-first-widget');
-        if (addFirstWidget) {
-          addFirstWidget.addEventListener('click', () => {
-            this.showWidgetPicker();
-          });
-        }
-        
-        // Reset layout
-        const resetLayout = document.getElementById('reset-layout');
-        if (resetLayout) {
-          resetLayout.addEventListener('click', () => {
-            if (confirm('Reset layout? This will remove all widgets.')) {
-              this.resetLayout();
-            }
-          });
-        }
-        
-        // Widget picker events
-        const closePicker = document.getElementById('close-picker');
-        if (closePicker) {
-          closePicker.addEventListener('click', () => {
-            this.hideWidgetPicker();
-          });
-        }
-        
-        // Click outside modal to close
-        const widgetPicker = document.getElementById('widget-picker');
-        if (widgetPicker) {
-          widgetPicker.addEventListener('click', (e) => {
-            if (e.target.id === 'widget-picker') {
-              this.hideWidgetPicker();
-            }
-          });
-        }
-        
-        // Widget type selection
-        document.querySelectorAll('.widget-option').forEach(option => {
-          option.addEventListener('click', () => {
-            const type = option.dataset.type;
-            this.addWidget(type);
-            this.hideWidgetPicker();
-          });
-        });
-      }
-      
-      toggleTheme() {
-        this.theme = this.theme === 'light' ? 'dark' : 'light';
-        document.body.dataset.theme = this.theme;
-        
-        const themeIcon = document.querySelector('#theme-toggle i');
-        if (themeIcon) {
-          themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
-        
-        this.showToast(`Switched to ${this.theme} theme`, 'info');
-      }
-      
-      showWidgetPicker() {
-        const picker = document.getElementById('widget-picker');
-        if (picker) {
-          picker.classList.remove('hidden');
-        }
-      }
-      
-      hideWidgetPicker() {
-        const picker = document.getElementById('widget-picker');
-        if (picker) {
-          picker.classList.add('hidden');
-        }
-      }
-      
-      async addWidget(type, config = {}, gridOptions = {}) {
-        const module = WidgetModules[type];
-        if (!module) {
-          this.showToast(`Widget type "${type}" not found`, 'error');
-          return;
-        }
-        
-        const widgetId = `widget-${type}-${++this.widgetCounter}`;
-        
-        // Create widget element
-        const widgetEl = document.createElement('div');
-        widgetEl.className = `widget ${type}-widget`;
-        widgetEl.dataset.widgetId = widgetId;
-        widgetEl.dataset.widgetType = type;
-        
-        // Create widget structure
-        widgetEl.innerHTML = `
-          <div class="widget-header">
-            <div class="widget-title">
-              <i class="${module.icon}"></i>
-              <span>${module.name}</span>
-            </div>
-            <div class="widget-actions">
-              <button class="widget-action refresh-widget" title="Refresh">
-                <i class="fas fa-sync-alt"></i>
-              </button>
-              <button class="widget-action configure-widget" title="Configure">
-                <i class="fas fa-cog"></i>
-              </button>
-              <button class="widget-action remove-widget" title="Remove">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          </div>
-          <div class="widget-content">
-            <div class="loading">
-              <div class="spinner"></div>
-              <span>Loading...</span>
-            </div>
-          </div>
-        `;
-        
-        // Add to grid with default size
-        const defaultSize = module.defaultSize || { w: 4, h: 3 };
-        const gridItem = this.grid.addWidget(widgetEl, {
-          w: gridOptions.w || defaultSize.w,
-          h: gridOptions.h || defaultSize.h,
-          x: gridOptions.x,
-          y: gridOptions.y,
-          autoPosition: !gridOptions.x && !gridOptions.y
-        });
-        
-        // Setup widget actions
-        this.setupWidgetActions(widgetEl);
-        
-        // Store widget info
-        this.widgets.set(widgetId, {
-          id: widgetId,
-          type: type,
-          config: config,
-          element: widgetEl
-        });
-        
-        // Load widget data
-        this.loadWidgetData(widgetId);
-        
-        // Update empty state
-        this.checkEmptyState();
-        
-        this.showToast(`Added ${module.name} widget`, 'success');
-      }
-      
-      setupWidgetActions(widgetEl) {
-        const widgetId = widgetEl.dataset.widgetId;
-        
-        // Refresh button
-        const refreshBtn = widgetEl.querySelector('.refresh-widget');
-        if (refreshBtn) {
-          refreshBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.loadWidgetData(widgetId);
-          });
-        }
-        
-        // Configure button
-        const configBtn = widgetEl.querySelector('.configure-widget');
-        if (configBtn) {
-          configBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.configureWidget(widgetId);
-          });
-        }
-        
-        // Remove button
-        const removeBtn = widgetEl.querySelector('.remove-widget');
-        if (removeBtn) {
-          removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.removeWidget(widgetId);
-          });
-        }
-      }
-      
-      async loadWidgetData(widgetId) {
-        const widget = this.widgets.get(widgetId);
-        if (!widget) return;
-        
-        const module = WidgetModules[widget.type];
-        const contentEl = widget.element.querySelector('.widget-content');
-        
-        try {
-          // Show loading
-          contentEl.innerHTML = `
-            <div class="loading">
-              <div class="spinner"></div>
-              <span>Loading...</span>
-            </div>
-          `;
-          
-          // Fetch data
-          const data = await module.fetchData(widget.config);
-          
-          // Render widget
-          module.render(contentEl, data);
-          
-        } catch (error) {
-          console.error(`Error loading widget ${widget.type}:`, error);
-          contentEl.innerHTML = `
-            <div class="widget-error">
-              <i class="fas fa-exclamation-triangle"></i>
-              <p>Failed to load data</p>
-              <button class="btn btn-ghost" onclick="dashboard.loadWidgetData('${widgetId}')">
-                Retry
-              </button>
-            </div>
-          `;
-          this.showToast(`Failed to load ${module.name}`, 'error');
-        }
-      }
-      
-      configureWidget(widgetId) {
-        const widget = this.widgets.get(widgetId);
-        if (!widget) return;
-        
-        const module = WidgetModules[widget.type];
-        
-        try {
-          const newConfig = module.configure(widget.config);
-          
-          if (newConfig) {
-            widget.config = { ...widget.config, ...newConfig };
-            this.loadWidgetData(widgetId);
-            this.showToast(`${module.name} configured`, 'success');
-          }
-        } catch (error) {
-          console.error('Error configuring widget:', error);
-          this.showToast('Error configuring widget', 'error');
-        }
-      }
-      
-      removeWidget(widgetId) {
-        const widget = this.widgets.get(widgetId);
-        if (!widget) return;
-        
-        if (confirm(`Remove ${WidgetModules[widget.type].name} widget?`)) {
-          this.grid.removeWidget(widget.element);
-          this.widgets.delete(widgetId);
-          this.checkEmptyState();
-          this.showToast('Widget removed', 'info');
-        }
-      }
-      
-      resetLayout() {
-        // Remove all widgets
-        this.widgets.forEach((widget) => {
-          this.grid.removeWidget(widget.element);
-        });
-        this.widgets.clear();
-        
-        // Reset counter
-        this.widgetCounter = 0;
-        
-        // Update UI
-        this.checkEmptyState();
-        this.showToast('Layout reset', 'info');
-      }
-      
-      checkEmptyState() {
-        const emptyState = document.getElementById('empty-state');
-        const hasWidgets = this.widgets.size > 0;
-        
-        if (emptyState) {
-          if (hasWidgets) {
-            emptyState.classList.add('hidden');
-          } else {
-            emptyState.classList.remove('hidden');
-          }
-        }
-      }
-      
-      showToast(message, type = 'info') {
-        const toastContainer = document.getElementById('toast-container');
-        if (!toastContainer) return;
-        
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.textContent = message;
-        
-        toastContainer.appendChild(toast);
-        
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-          if (toast.parentNode) {
-            toast.style.opacity = '0';
-            setTimeout(() => {
-              if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-              }
-            }, 300);
-          }
-        }, 3000);
-      }
-      
-      // Add some default widgets for demonstration
-      addDefaultWidgets() {
-        setTimeout(() => {
-          this.addWidget('weather');
-          this.addWidget('crypto');
-          this.addWidget('countdown', { 
-            title: 'New Year 2026', 
-            targetDate: '2026-01-01T00:00:00' 
-          });
-          this.addWidget('notes');
-        }, 500);
-      }
-    }
+  <script src="app.js"></script>
 
-    // Initialize dashboard when DOM is loaded
+  <!-- ===== INITIALIZATION ===== -->
+  <script>
+    // Check GridStack loading
     document.addEventListener('DOMContentLoaded', () => {
-      // Check if GridStack is available
       if (typeof GridStack === 'undefined') {
-        console.error('GridStack is not available');
+        console.error('GridStack failed to load!');
         document.body.innerHTML = `
-          <div style="text-align: center; padding: 2rem; color: #ef4444;">
-            <h2>Error: GridStack library failed to load</h2>
-            <p>Please check your internet connection and refresh the page.</p>
+          <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2rem;">
+            <div>
+              <h1 style="color: var(--error); margin-bottom: 1rem;">Error: GridStack library failed to load</h1>
+              <p style="color: var(--text-muted);">Please check your internet connection and refresh the page.</p>
+            </div>
           </div>
         `;
         return;
       }
       
-      // Check if WidgetModules is available
-      if (typeof WidgetModules === 'undefined') {
-        console.error('WidgetModules is not available');
-        document.body.innerHTML = `
-          <div style="text-align: center; padding: 2rem; color: #ef4444;">
-            <h2>Error: Widget modules failed to load</h2>
-            <p>Please refresh the page to try again.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      try {
-        window.dashboard = new Dashboard();
-        console.log('🚀 Dashboard initialized successfully');
-      } catch (error) {
-        console.error('Error initializing dashboard:', error);
-        document.body.innerHTML = `
-          <div style="text-align: center; padding: 2rem; color: #ef4444;">
-            <h2>Error: Dashboard failed to initialize</h2>
-            <p>Please refresh the page to try again.</p>
-            <details style="margin-top: 1rem;">
-              <summary>Error details</summary>
-              <pre style="text-align: left; margin-top: 0.5rem;">${error.message}</pre>
-            </details>
-          </div>
-        `;
-      }
+      console.log('✅ GridStack loaded successfully:', GridStack.version || 'Unknown version');
     });
   </script>
 </body>
