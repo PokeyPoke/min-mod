@@ -3,84 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modular Dashboard - Interactive Widget Showcase</title>
+  <title>Dashboard</title>
   
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- GridStack CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack/8.4.0/gridstack.min.css">
   
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-<link rel="stylesheet" href="css/themes.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-theme="light">
   <!-- Header -->
   <header class="header">
-    <div class="header-container">
-      <a href="#" class="logo">
+    <div class="header-content">
+      <div class="logo">
         <i class="fas fa-tachometer-alt"></i>
         <span>Dashboard</span>
-      </a>
+      </div>
       
-      <div class="controls">
-        <div class="theme-switcher">
-          <button class="theme-btn active" data-theme="light">Light</button>
-          <button class="theme-btn" data-theme="dark">Dark</button>
-        </div>
-        
-        <div class="layout-switcher">
-          <button class="layout-btn" data-layout="minimal" title="Minimal">
-            <i class="fas fa-th-large"></i>
-          </button>
-          <button class="layout-btn active" data-layout="balanced" title="Balanced">
-            <i class="fas fa-th"></i>
-          </button>
-          <button class="layout-btn" data-layout="dense" title="Dense">
-            <i class="fas fa-grip"></i>
-          </button>
-          <button class="layout-btn" data-layout="ultra-dense" title="Ultra Dense">
-            <i class="fas fa-border-all"></i>
-          </button>
-        </div>
-        
-        <!-- Authentication Section -->
-        <div id="auth-section">
-          <button id="login-btn" class="btn btn-outline-light btn-sm me-2">Sign In</button>
-          <button id="register-btn" class="btn btn-primary btn-sm">Sign Up</button>
-        </div>
-        
-        <!-- Dashboard Button -->
-        <button id="customize-btn" class="dashboard-btn" style="display: none;">
-          <i class="fas fa-cog"></i>
-          Customize
+      <div class="header-controls">
+        <button id="theme-toggle" class="btn btn-ghost" title="Toggle theme">
+          <i class="fas fa-moon"></i>
         </button>
         
-        <a href="/dashboard" class="dashboard-btn">
-          <i class="fas fa-external-link-alt"></i>
-          Full Dashboard
-        </a>
+        <button id="add-widget" class="btn btn-primary">
+          <i class="fas fa-plus"></i>
+          <span>Add Widget</span>
+        </button>
+        
+        <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
+          <i class="fas fa-refresh"></i>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="main-container">
-    <div class="widgets-grid grid-balanced" id="widgets-grid">
-      <!-- Widgets will be loaded dynamically -->
+  <!-- Main Dashboard -->
+  <main class="dashboard">
+    <div class="grid-stack" id="dashboard-grid">
+      <!-- Widgets will be added here dynamically -->
     </div>
     
-    <!-- Loading Indicator -->
-    <div id="loading-indicator" class="loading-overlay">
-      <div class="loading-spinner"></div>
-      <p>Loading your dashboard...</p>
+    <!-- Empty state -->
+    <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-content">
+        <i class="fas fa-plus-circle"></i>
+        <h2>Your Dashboard Awaits</h2>
+        <p>Click "Add Widget" to get started with your personalized dashboard.</p>
+        <button id="add-first-widget" class="btn btn-primary btn-large">
+          <i class="fas fa-plus"></i>
+          Add Your First Widget
+        </button>
+      </div>
     </div>
   </main>
 
-  <!-- Toast Container -->
-  <div class="toast-container" id="toast-container"></div>
+  <!-- Widget Picker Modal -->
+  <div id="widget-picker" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Widget</h2>
+        <button class="modal-close" id="close-picker">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="widget-grid">
+        <div class="widget-option" data-type="weather">
+          <div class="widget-icon">
+            <i class="fas fa-cloud-sun"></i>
+          </div>
+          <h3>Weather</h3>
+          <p>Current weather conditions</p>
+        </div>
+        
+        <div class="widget-option" data-type="crypto">
+          <div class="widget-icon">
+            <i class="fab fa-bitcoin"></i>
+          </div>
+          <h3>Crypto</h3>
+          <p>Cryptocurrency prices</p>
+        </div>
+        
+        <div class="widget-option" data-type="stocks">
+          <div class="widget-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>Stocks</h3>
+          <p>Stock market data</p>
+        </div>
+        
+        <div class="widget-option" data-type="countdown">
+          <div class="widget-icon">
+            <i class="fas fa-hourglass-half"></i>
+          </div>
+          <h3>Countdown</h3>
+          <p>Count down to events</p>
+        </div>
+        
+        <div class="widget-option" data-type="notes">
+          <div class="widget-icon">
+            <i class="fas fa-sticky-note"></i>
+          </div>
+          <h3>Notes</h3>
+          <p>Quick notes and reminders</p>
+        </div>
+        
+        <div class="widget-option" data-type="todo">
+          <div class="widget-icon">
+            <i class="fas fa-tasks"></i>
+          </div>
+          <h3>Todo</h3>
+          <p>Task management</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <script src="js/homepage.js"></script>
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Loading Indicator -->
+  <div id="loading" class="loading" style="display: none;">
+    <div class="spinner"></div>
+    <span>Loading...</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack/8.4.0/gridstack-all.min.js"></script>
+  <script src="modules.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
