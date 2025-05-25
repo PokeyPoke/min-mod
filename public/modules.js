@@ -38,8 +38,10 @@ const WidgetModules = {
     
     configure() {
       const location = prompt('Enter city name:', 'New York');
+      if (!location) return null;
+      
       const units = confirm('Use Celsius? (Cancel for Fahrenheit)') ? 'metric' : 'imperial';
-      return location ? { location, units } : null;
+      return { location, units };
     }
   },
 
@@ -85,8 +87,10 @@ const WidgetModules = {
     
     configure() {
       const coin = prompt('Enter cryptocurrency (e.g., bitcoin, ethereum):', 'bitcoin');
+      if (!coin) return null;
+      
       const currency = prompt('Enter currency (usd, eur, btc):', 'usd');
-      return coin ? { coin: coin.toLowerCase(), currency: currency.toLowerCase() } : null;
+      return { coin: coin.toLowerCase(), currency: currency.toLowerCase() };
     },
     
     formatNumber(num) {
@@ -217,12 +221,18 @@ const WidgetModules = {
     
     configure() {
       const title = prompt('Enter event title:', 'New Year');
+      if (!title) return null;
+      
       const dateStr = prompt('Enter target date (YYYY-MM-DD):', '2025-12-31');
-      if (title && dateStr) {
+      if (!dateStr) return null;
+      
+      try {
         const targetDate = new Date(dateStr + 'T23:59:59').toISOString();
         return { title, targetDate };
+      } catch (error) {
+        alert('Invalid date format. Please use YYYY-MM-DD format.');
+        return null;
       }
-      return null;
     }
   },
 
@@ -233,10 +243,15 @@ const WidgetModules = {
     
     async fetchData(config = {}) {
       const { title = 'Notes', content = '' } = config;
-      const response = await fetch(`/api/notes?title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`);
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-      return { ...result.data, ...config };
+      try {
+        const response = await fetch(`/api/notes?title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`);
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        return { ...result.data, ...config };
+      } catch (error) {
+        // Fallback for local operation
+        return { title, content, showWordCount: true, autoSave: true };
+      }
     },
     
     render(container, data) {
@@ -263,17 +278,25 @@ const WidgetModules = {
         wordCount.textContent = `${words} words`;
         
         // Auto-save to localStorage
-        localStorage.setItem(`notes-${noteId}`, textarea.value);
+        try {
+          localStorage.setItem(`notes-${noteId}`, textarea.value);
+        } catch (e) {
+          console.warn('Could not save to localStorage:', e);
+        }
       };
       
       textarea.addEventListener('input', updateStats);
       updateStats();
       
       // Load saved content
-      const saved = localStorage.getItem(`notes-${noteId}`);
-      if (saved) {
-        textarea.value = saved;
-        updateStats();
+      try {
+        const saved = localStorage.getItem(`notes-${noteId}`);
+        if (saved) {
+          textarea.value = saved;
+          updateStats();
+        }
+      } catch (e) {
+        console.warn('Could not load from localStorage:', e);
       }
     },
     
@@ -290,17 +313,28 @@ const WidgetModules = {
     
     async fetchData(config = {}) {
       const { title = 'Todo List' } = config;
-      const response = await fetch(`/api/todo?title=${encodeURIComponent(title)}`);
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error);
-      return { ...result.data, ...config };
+      try {
+        const response = await fetch(`/api/todo?title=${encodeURIComponent(title)}`);
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        return { ...result.data, ...config };
+      } catch (error) {
+        // Fallback for local operation
+        return { title, items: [], showCompleted: true, maxItems: 10 };
+      }
     },
     
     render(container, data) {
       const todoId = 'todo-' + Math.random().toString(36).substr(2, 9);
       
       // Load saved todos
-      let todos = JSON.parse(localStorage.getItem(`todos-${todoId}`) || '[]');
+      let todos = [];
+      try {
+        todos = JSON.parse(localStorage.getItem(`todos-${todoId}`) || '[]');
+      } catch (e) {
+        console.warn('Could not load todos from localStorage:', e);
+        todos = [];
+      }
       
       const renderTodos = () => {
         const todoList = todos.map((todo, index) => `
@@ -351,7 +385,11 @@ const WidgetModules = {
         if (e.key === 'Enter' && input.value.trim()) {
           todos.push({ text: input.value.trim(), completed: false });
           input.value = '';
-          localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          try {
+            localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          } catch (err) {
+            console.warn('Could not save todos to localStorage:', err);
+          }
           container.innerHTML = renderTodos();
           this.render(container, data); // Re-render to reattach events
         }
@@ -362,7 +400,11 @@ const WidgetModules = {
         checkbox.addEventListener('change', (e) => {
           const index = parseInt(e.target.dataset.index);
           todos[index].completed = e.target.checked;
-          localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          try {
+            localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          } catch (err) {
+            console.warn('Could not save todos to localStorage:', err);
+          }
           container.innerHTML = renderTodos();
           this.render(container, data); // Re-render to reattach events
         });
@@ -373,7 +415,11 @@ const WidgetModules = {
         button.addEventListener('click', (e) => {
           const index = parseInt(e.target.closest('.delete-todo').dataset.index);
           todos.splice(index, 1);
-          localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          try {
+            localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          } catch (err) {
+            console.warn('Could not save todos to localStorage:', err);
+          }
           container.innerHTML = renderTodos();
           this.render(container, data); // Re-render to reattach events
         });
