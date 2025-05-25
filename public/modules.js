@@ -1,4 +1,4 @@
-// All widget modules in one file for simplicity
+// Complete Widget Modules for Enhanced Dashboard
 const WidgetModules = {
   weather: {
     name: 'Weather',
@@ -21,7 +21,7 @@ const WidgetModules = {
           <div class="widget-main">${data.temp}${tempUnit}</div>
           <div class="widget-sub">${data.condition}</div>
           <div class="widget-location">${data.location}</div>
-          ${data.demo ? '<div class="text-muted">Demo Data</div>' : ''}
+          ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
           <div class="widget-details">
             <div class="detail-item">
               <span class="detail-label">Humidity</span>
@@ -128,7 +128,7 @@ const WidgetModules = {
             <span class="${changeClass}">${data.change} (${data.changePercent})</span>
           </div>
           <div class="widget-location">${data.symbol}</div>
-          ${data.demo ? '<div class="text-muted">Demo Data</div>' : ''}
+          ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
           <div class="widget-details">
             <div class="detail-item">
               <span class="detail-label">Volume</span>
@@ -258,13 +258,15 @@ const WidgetModules = {
       const noteId = 'note-' + Math.random().toString(36).substr(2, 9);
       
       container.innerHTML = `
-        <div class="notes-widget-content">
+        <div class="notes-widget-content" style="height: 100%; display: flex; flex-direction: column;">
           <textarea 
             class="notes-textarea" 
             placeholder="Enter your notes here..."
             data-note-id="${noteId}"
-          >${data.content || ''}</textarea>
-          <div class="notes-stats">
+            style="flex: 1; width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; font-family: inherit; font-size: 0.875rem; background: var(--background); color: var(--text); resize: none;"
+            ${window.dashboard && window.dashboard.demoMode ? 'readonly' : ''}
+          >${window.dashboard && window.dashboard.demoMode ? 'This is a demo notes widget.\nLogin to start taking notes!' : data.content || ''}</textarea>
+          <div class="notes-stats" style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
             <span id="word-count-${noteId}">0 words</span>
           </div>
         </div>
@@ -277,27 +279,31 @@ const WidgetModules = {
         const words = textarea.value.trim() ? textarea.value.trim().split(/\s+/).length : 0;
         wordCount.textContent = `${words} words`;
         
-        // Auto-save to localStorage
-        try {
-          localStorage.setItem(`notes-${noteId}`, textarea.value);
-        } catch (e) {
-          console.warn('Could not save to localStorage:', e);
+        // Auto-save to localStorage (only if not in demo mode)
+        if (window.dashboard && !window.dashboard.demoMode) {
+          try {
+            localStorage.setItem(`notes-${noteId}`, textarea.value);
+          } catch (e) {
+            console.warn('Could not save to localStorage:', e);
+          }
         }
       };
       
-      textarea.addEventListener('input', updateStats);
-      updateStats();
-      
-      // Load saved content
-      try {
-        const saved = localStorage.getItem(`notes-${noteId}`);
-        if (saved) {
-          textarea.value = saved;
-          updateStats();
+      if (!window.dashboard || !window.dashboard.demoMode) {
+        textarea.addEventListener('input', updateStats);
+        
+        // Load saved content
+        try {
+          const saved = localStorage.getItem(`notes-${noteId}`);
+          if (saved) {
+            textarea.value = saved;
+          }
+        } catch (e) {
+          console.warn('Could not load from localStorage:', e);
         }
-      } catch (e) {
-        console.warn('Could not load from localStorage:', e);
       }
+      
+      updateStats();
     },
     
     configure() {
@@ -325,6 +331,27 @@ const WidgetModules = {
     },
     
     render(container, data) {
+      if (window.dashboard && window.dashboard.demoMode) {
+        container.innerHTML = `
+          <div style="height: 100%; display: flex; flex-direction: column; gap: 1rem;">
+            <input 
+              type="text" 
+              placeholder="Login to add tasks"
+              style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); color: var(--text);"
+              readonly
+            >
+            <div style="flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
+              <div>
+                <i class="fas fa-tasks" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                Demo Todo Widget<br>
+                Login to manage your tasks!
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
       const todoId = 'todo-' + Math.random().toString(36).substr(2, 9);
       
       // Load saved todos
@@ -338,34 +365,36 @@ const WidgetModules = {
       
       const renderTodos = () => {
         const todoList = todos.map((todo, index) => `
-          <div class="todo-item ${todo.completed ? 'completed' : ''}">
+          <div class="todo-item ${todo.completed ? 'completed' : ''}" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; border-bottom: 1px solid var(--border);">
             <input 
               type="checkbox" 
               class="todo-checkbox" 
               ${todo.completed ? 'checked' : ''}
               data-index="${index}"
+              style="accent-color: var(--primary);"
             >
-            <span class="todo-text">${todo.text}</span>
-            <button class="widget-action delete-todo" data-index="${index}">
+            <span class="todo-text" style="flex: 1; font-size: 0.875rem; ${todo.completed ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${todo.text}</span>
+            <button class="widget-action delete-todo" data-index="${index}" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.25rem;">
               <i class="fas fa-times"></i>
             </button>
           </div>
         `).join('');
         
         return `
-          <div class="todo-widget-content">
+          <div class="todo-widget-content" style="height: 100%; display: flex; flex-direction: column; gap: 1rem;">
             <div class="todo-input-container">
               <input 
                 type="text" 
                 class="todo-input" 
                 placeholder="Add new task..."
                 data-todo-id="${todoId}"
+                style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); color: var(--text);"
               >
             </div>
-            <div class="todo-list">
-              ${todoList}
+            <div class="todo-list" style="flex: 1; overflow-y: auto;">
+              ${todoList || '<div style="color: var(--text-muted); text-align: center; padding: 1rem;">No tasks yet</div>'}
             </div>
-            <div class="todo-stats">
+            <div class="todo-stats" style="font-size: 0.75rem; color: var(--text-muted);">
               ${todos.filter(t => !t.completed).length} active, 
               ${todos.filter(t => t.completed).length} completed
             </div>
@@ -381,19 +410,21 @@ const WidgetModules = {
       const deleteButtons = container.querySelectorAll('.delete-todo');
       
       // Add new todo
-      input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && input.value.trim()) {
-          todos.push({ text: input.value.trim(), completed: false });
-          input.value = '';
-          try {
-            localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
-          } catch (err) {
-            console.warn('Could not save todos to localStorage:', err);
+      if (input) {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && input.value.trim()) {
+            todos.push({ text: input.value.trim(), completed: false });
+            input.value = '';
+            try {
+              localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+            } catch (err) {
+              console.warn('Could not save todos to localStorage:', err);
+            }
+            container.innerHTML = renderTodos();
+            this.render(container, data); // Re-render to reattach events
           }
-          container.innerHTML = renderTodos();
-          this.render(container, data); // Re-render to reattach events
-        }
-      });
+        });
+      }
       
       // Toggle completion
       checkboxes.forEach(checkbox => {
@@ -433,5 +464,5 @@ const WidgetModules = {
   }
 };
 
-// Export for use in app.js
+// Export for use in main application
 window.WidgetModules = WidgetModules;
