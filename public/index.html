@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self'; img-src 'self' data: https:;">
   <title>Enhanced Dashboard</title>
   
   <!-- External CSS -->
@@ -709,17 +710,17 @@
       <form id="auth-form" class="auth-form">
         <div class="form-group">
           <label class="form-label" for="email">Email</label>
-          <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+          <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" autocomplete="email" required>
         </div>
         
         <div class="form-group">
           <label class="form-label" for="password">Password</label>
-          <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+          <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" autocomplete="current-password" required>
         </div>
         
         <div class="form-group hidden" id="confirm-password-group">
           <label class="form-label" for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" class="form-input" placeholder="Confirm your password">
+          <input type="password" id="confirm-password" name="confirm-password" class="form-input" placeholder="Confirm your password" autocomplete="new-password">
         </div>
         
         <button type="submit" class="btn btn-primary btn-large" id="auth-submit">
@@ -911,12 +912,12 @@
           
           <div class="form-group">
             <label class="form-label" for="device-name">Add New Device</label>
-            <input type="text" id="device-name" class="form-input" placeholder="Device name (e.g., Living Room Display)">
+            <input type="text" id="device-name" name="device-name" class="form-input" placeholder="Device name (e.g., Living Room Display)" autocomplete="off">
           </div>
           
           <div class="form-group">
             <label class="form-label" for="device-id">Device ID</label>
-            <input type="text" id="device-id" class="form-input" placeholder="ESP32 device unique ID">
+            <input type="text" id="device-id" name="device-id" class="form-input" placeholder="ESP32 device unique ID" autocomplete="off">
           </div>
           
           <button id="add-esp32" class="btn btn-primary">
