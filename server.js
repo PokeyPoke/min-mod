@@ -1,5 +1,5 @@
 /**
- * Enhanced Dashboard Server - Optimized for Heroku
+ * Enhanced Dashboard Server - Optimized for Heroku with Authentication
  * Configured for Alpha Vantage stock API
  */
 
@@ -19,6 +19,10 @@ app.use(express.static('public'));
 const cache = new Map();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 const RATE_LIMIT_CACHE = new Map();
+
+// Simple user storage (replace with real database in production)
+const users = new Map();
+const sessions = new Map();
 
 // Helper functions
 function getCacheKey(type, params) {
@@ -43,6 +47,19 @@ function isRateLimited(key, limit = 5, window = 60000) {
   validRequests.push(now);
   RATE_LIMIT_CACHE.set(key, validRequests);
   return false;
+}
+
+function generateSessionId() {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+function hashPassword(password) {
+  // Simple hash for demo - use bcrypt in production
+  return Buffer.from(password).toString('base64');
+}
+
+function verifyPassword(password, hash) {
+  return hashPassword(password) === hash;
 }
 
 async function fetchWithRetry(url, options = {}, retries = 2) {
@@ -74,6 +91,168 @@ async function fetchWithRetry(url, options = {}, retries = 2) {
     }
   }
 }
+
+// ===== AUTHENTICATION ENDPOINTS =====
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    
+    // Check if user already exists
+    if (users.has(email)) {
+      return res.status(409).json({ error: 'User already exists' });
+    }
+    
+    // Create new user
+    const user = {
+      id: Date.now().toString(),
+      email: email,
+      name: name || email.split('@')[0],
+      password: hashPassword(password),
+      createdAt: new Date().toISOString(),
+      dashboardLayout: null
+    };
+    
+    users.set(email, user);
+    
+    // Create session
+    const sessionId = generateSessionId();
+    sessions.set(sessionId, {
+      userId: user.id,
+      email: user.email,
+      createdAt: Date.now()
+    });
+    
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      },
+      sessionId: sessionId
+    });
+    
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    
+    // Find user
+    const user = users.get(email);
+    if (!user || !verifyPassword(password, user.password)) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Create session
+    const sessionId = generateSessionId();
+    sessions.set(sessionId, {
+      userId: user.id,
+      email: user.email,
+      createdAt: Date.now()
+    });
+    
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      },
+      sessionId: sessionId
+    });
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const { sessionId } = req.body;
+  
+  if (sessionId && sessions.has(sessionId)) {
+    sessions.delete(sessionId);
+  }
+  
+  res.json({ success: true });
+});
+
+app.get('/api/auth/verify', (req, res) => {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!sessionId || !sessions.has(sessionId)) {
+    return res.status(401).json({ error: 'Invalid session' });
+  }
+  
+  const session = sessions.get(sessionId);
+  const user = Array.from(users.values()).find(u => u.id === session.userId);
+  
+  if (!user) {
+    sessions.delete(sessionId);
+    return res.status(401).json({ error: 'User not found' });
+  }
+  
+  res.json({
+    success: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name
+    }
+  });
+});
+
+// Middleware to check authentication for protected routes
+function requireAuth(req, res, next) {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!sessionId || !sessions.has(sessionId)) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  
+  const session = sessions.get(sessionId);
+  const user = Array.from(users.values()).find(u => u.id === session.userId);
+  
+  if (!user) {
+    sessions.delete(sessionId);
+    return res.status(401).json({ error: 'User not found' });
+  }
+  
+  req.user = user;
+  req.sessionId = sessionId;
+  next();
+}
+
+// ===== USER DASHBOARD ENDPOINTS =====
+app.get('/api/user/dashboard', requireAuth, (req, res) => {
+  res.json({
+    success: true,
+    layout: req.user.dashboardLayout
+  });
+});
+
+app.post('/api/user/dashboard', requireAuth, (req, res) => {
+  const { layout } = req.body;
+  
+  // Update user's dashboard layout
+  req.user.dashboardLayout = layout;
+  users.set(req.user.email, req.user);
+  
+  res.json({ success: true });
+});
 
 // ===== WEATHER API =====
 app.get('/api/weather', async (req, res) => {
@@ -261,343 +440,6 @@ app.get('/api/stocks', async (req, res) => {
   }
 });
 
-// ===== SEARCH APIS =====
-
-// City search for weather
-app.get('/api/search/cities', async (req, res) => {
-  const { q: query } = req.query;
-  
-  if (!query || query.length < 2) {
-    return res.json({ data: [] });
-  }
-  
-  try {
-    if (process.env.OPENWEATHER_API_KEY && query.length >= 3) {
-      if (isRateLimited(`city-search-${req.ip}`, 10, 60000)) {
-        return res.status(429).json({ error: 'Rate limit exceeded' });
-      }
-      
-      const url = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=8&appid=${process.env.OPENWEATHER_API_KEY}`;
-      const response = await fetchWithRetry(url);
-      const data = await response.json();
-      
-      const cities = data.map(city => ({
-        id: `${city.lat}-${city.lon}`,
-        name: city.name,
-        country: city.country,
-        state: city.state,
-        displayName: `${city.name}${city.state ? `, ${city.state}` : ''}, ${city.country}`
-      }));
-      
-      res.json({ data: cities });
-    } else {
-      // Comprehensive demo cities
-      const demoCities = [
-        { id: '1', name: 'New York', country: 'US', state: 'NY', displayName: 'New York, NY, US' },
-        { id: '2', name: 'Los Angeles', country: 'US', state: 'CA', displayName: 'Los Angeles, CA, US' },
-        { id: '3', name: 'London', country: 'GB', displayName: 'London, GB' },
-        { id: '4', name: 'Tokyo', country: 'JP', displayName: 'Tokyo, JP' },
-        { id: '5', name: 'Paris', country: 'FR', displayName: 'Paris, FR' },
-        { id: '6', name: 'Sydney', country: 'AU', displayName: 'Sydney, AU' },
-        { id: '7', name: 'Toronto', country: 'CA', displayName: 'Toronto, CA' },
-        { id: '8', name: 'Berlin', country: 'DE', displayName: 'Berlin, DE' },
-        { id: '9', name: 'Mumbai', country: 'IN', displayName: 'Mumbai, IN' },
-        { id: '10', name: 'Singapore', country: 'SG', displayName: 'Singapore, SG' }
-      ].filter(city => 
-        city.name.toLowerCase().includes(query.toLowerCase()) ||
-        city.country.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      res.json({ data: demoCities });
-    }
-  } catch (error) {
-    console.error('City search error:', error);
-    res.status(500).json({ error: 'Failed to search cities' });
-  }
-});
-
-// Cryptocurrency search with top 100 first
-app.get('/api/search/crypto', async (req, res) => {
-  const { q: query } = req.query;
-  
-  if (!query || query.length < 1) {
-    return res.json({ data: [] });
-  }
-  
-  try {
-    // Use cached list or fetch from CoinGecko
-    let coinsList = cache.get('crypto-list');
-    
-    if (!coinsList || !isCacheValid(coinsList.timestamp)) {
-      if (isRateLimited(`crypto-list-${req.ip}`, 2, 300000)) {
-        // Fallback to comprehensive demo data
-        coinsList = { data: null };
-      } else {
-        try {
-          const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false';
-          const response = await fetchWithRetry(url);
-          const data = await response.json();
-          coinsList = { data, timestamp: Date.now() };
-          cache.set('crypto-list', coinsList);
-        } catch (error) {
-          coinsList = { data: null };
-        }
-      }
-    }
-    
-    let coins;
-    if (coinsList.data) {
-      // Filter by search query
-      const filtered = coinsList.data.filter(coin => 
-        coin.name.toLowerCase().includes(query.toLowerCase()) ||
-        coin.symbol.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      // Sort: exact matches first, then by market cap
-      filtered.sort((a, b) => {
-        const aExact = a.symbol.toLowerCase() === query.toLowerCase() || a.name.toLowerCase() === query.toLowerCase();
-        const bExact = b.symbol.toLowerCase() === query.toLowerCase() || b.name.toLowerCase() === query.toLowerCase();
-        
-        if (aExact && !bExact) return -1;
-        if (bExact && !aExact) return 1;
-        
-        return b.market_cap_rank - a.market_cap_rank; // Lower rank = higher position
-      });
-      
-      coins = filtered.slice(0, 50).map(coin => ({
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol.toUpperCase(),
-        marketCapRank: coin.market_cap_rank || 999
-      }));
-    } else {
-      // Comprehensive demo cryptocurrency data - top 100 style
-      const topCryptos = [
-        { id: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', marketCapRank: 1 },
-        { id: 'ethereum', name: 'Ethereum', symbol: 'ETH', marketCapRank: 2 },
-        { id: 'tether', name: 'Tether', symbol: 'USDT', marketCapRank: 3 },
-        { id: 'bnb', name: 'BNB', symbol: 'BNB', marketCapRank: 4 },
-        { id: 'solana', name: 'Solana', symbol: 'SOL', marketCapRank: 5 },
-        { id: 'usd-coin', name: 'USD Coin', symbol: 'USDC', marketCapRank: 6 },
-        { id: 'xrp', name: 'XRP', symbol: 'XRP', marketCapRank: 7 },
-        { id: 'cardano', name: 'Cardano', symbol: 'ADA', marketCapRank: 8 },
-        { id: 'avalanche-2', name: 'Avalanche', symbol: 'AVAX', marketCapRank: 9 },
-        { id: 'dogecoin', name: 'Dogecoin', symbol: 'DOGE', marketCapRank: 10 },
-        { id: 'chainlink', name: 'Chainlink', symbol: 'LINK', marketCapRank: 11 },
-        { id: 'polkadot', name: 'Polkadot', symbol: 'DOT', marketCapRank: 12 },
-        { id: 'polygon', name: 'Polygon', symbol: 'MATIC', marketCapRank: 13 },
-        { id: 'litecoin', name: 'Litecoin', symbol: 'LTC', marketCapRank: 14 },
-        { id: 'internet-computer', name: 'Internet Computer', symbol: 'ICP', marketCapRank: 15 },
-        { id: 'stellar', name: 'Stellar', symbol: 'XLM', marketCapRank: 16 },
-        { id: 'cosmos', name: 'Cosmos', symbol: 'ATOM', marketCapRank: 17 },
-        { id: 'ethereum-classic', name: 'Ethereum Classic', symbol: 'ETC', marketCapRank: 18 },
-        { id: 'vechain', name: 'VeChain', symbol: 'VET', marketCapRank: 19 },
-        { id: 'filecoin', name: 'Filecoin', symbol: 'FIL', marketCapRank: 20 },
-        { id: 'algorand', name: 'Algorand', symbol: 'ALGO', marketCapRank: 21 },
-        { id: 'hedera-hashgraph', name: 'Hedera', symbol: 'HBAR', marketCapRank: 22 },
-        { id: 'the-sandbox', name: 'The Sandbox', symbol: 'SAND', marketCapRank: 23 },
-        { id: 'decentraland', name: 'Decentraland', symbol: 'MANA', marketCapRank: 24 },
-        { id: 'axie-infinity', name: 'Axie Infinity', symbol: 'AXS', marketCapRank: 25 }
-      ];
-      
-      coins = topCryptos.filter(crypto => 
-        crypto.name.toLowerCase().includes(query.toLowerCase()) ||
-        crypto.symbol.toLowerCase().includes(query.toLowerCase())
-      );
-    }
-    
-    res.json({ data: coins });
-  } catch (error) {
-    console.error('Crypto search error:', error);
-    res.status(500).json({ error: 'Failed to search cryptocurrencies' });
-  }
-});
-
-// Stock search (Alpha Vantage optimized) with more comprehensive demo data
-app.get('/api/search/stocks', async (req, res) => {
-  const { q: query } = req.query;
-  
-  if (!query || query.length < 1) {
-    return res.json({ data: [] });
-  }
-  
-  try {
-    if (process.env.ALPHA_VANTAGE_API_KEY && query.length >= 2) {
-      // Conservative rate limiting for Alpha Vantage search
-      if (isRateLimited(`stock-search-${req.ip}`, 2, 70000)) {
-        return res.status(429).json({ error: 'Rate limit exceeded' });
-      }
-      
-      const url = `https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${encodeURIComponent(query)}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`;
-      const response = await fetchWithRetry(url);
-      const data = await response.json();
-      
-      if (data['Note']) {
-        throw new Error('API call frequency limit reached');
-      }
-      
-      const stocks = (data.bestMatches || []).slice(0, 25).map(match => ({
-        symbol: match['1. symbol'],
-        name: match['2. name'],
-        type: match['3. type'],
-        region: match['4. region']
-      }));
-      
-      res.json({ data: stocks });
-    } else {
-      // Much more comprehensive demo stock data
-      const demoStocks = [
-        // Tech Giants
-        { symbol: 'AAPL', name: 'Apple Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'GOOGL', name: 'Alphabet Inc. Class A', type: 'Equity', region: 'United States' },
-        { symbol: 'GOOG', name: 'Alphabet Inc. Class C', type: 'Equity', region: 'United States' },
-        { symbol: 'MSFT', name: 'Microsoft Corporation', type: 'Equity', region: 'United States' },
-        { symbol: 'AMZN', name: 'Amazon.com Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'TSLA', name: 'Tesla Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'NVDA', name: 'NVIDIA Corporation', type: 'Equity', region: 'United States' },
-        { symbol: 'META', name: 'Meta Platforms Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'NFLX', name: 'Netflix Inc.', type: 'Equity', region: 'United States' },
-        
-        // Other Tech
-        { symbol: 'AMD', name: 'Advanced Micro Devices Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'INTC', name: 'Intel Corporation', type: 'Equity', region: 'United States' },
-        { symbol: 'CRM', name: 'Salesforce Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'ORCL', name: 'Oracle Corporation', type: 'Equity', region: 'United States' },
-        { symbol: 'ADBE', name: 'Adobe Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'CSCO', name: 'Cisco Systems Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'IBM', name: 'International Business Machines Corp.', type: 'Equity', region: 'United States' },
-        { symbol: 'UBER', name: 'Uber Technologies Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'LYFT', name: 'Lyft Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'SPOT', name: 'Spotify Technology S.A.', type: 'Equity', region: 'United States' },
-        { symbol: 'SQ', name: 'Block Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'PYPL', name: 'PayPal Holdings Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'SHOP', name: 'Shopify Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'TWTR', name: 'Twitter Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'SNAP', name: 'Snap Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'ZOOM', name: 'Zoom Video Communications Inc.', type: 'Equity', region: 'United States' },
-        
-        // Finance
-        { symbol: 'JPM', name: 'JPMorgan Chase & Co.', type: 'Equity', region: 'United States' },
-        { symbol: 'BAC', name: 'Bank of America Corp.', type: 'Equity', region: 'United States' },
-        { symbol: 'WFC', name: 'Wells Fargo & Co.', type: 'Equity', region: 'United States' },
-        { symbol: 'GS', name: 'Goldman Sachs Group Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'MS', name: 'Morgan Stanley', type: 'Equity', region: 'United States' },
-        { symbol: 'C', name: 'Citigroup Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'V', name: 'Visa Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'MA', name: 'Mastercard Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'AXP', name: 'American Express Co.', type: 'Equity', region: 'United States' },
-        
-        // Healthcare
-        { symbol: 'JNJ', name: 'Johnson & Johnson', type: 'Equity', region: 'United States' },
-        { symbol: 'PFE', name: 'Pfizer Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'MRNA', name: 'Moderna Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'ABBV', name: 'AbbVie Inc.', type: 'Equity', region: 'United States' },
-        
-        // Consumer
-        { symbol: 'KO', name: 'Coca-Cola Co.', type: 'Equity', region: 'United States' },
-        { symbol: 'PEP', name: 'PepsiCo Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'WMT', name: 'Walmart Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'TGT', name: 'Target Corp.', type: 'Equity', region: 'United States' },
-        { symbol: 'HD', name: 'Home Depot Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'LOW', name: 'Lowe\'s Companies Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'NKE', name: 'Nike Inc.', type: 'Equity', region: 'United States' },
-        { symbol: 'SBUX', name: 'Starbucks Corp.', type: 'Equity', region: 'United States' },
-        { symbol: 'MCD', name: 'McDonald\'s Corp.', type: 'Equity', region: 'United States' },
-        
-        // Energy
-        { symbol: 'XOM', name: 'Exxon Mobil Corp.', type: 'Equity', region: 'United States' },
-        { symbol: 'CVX', name: 'Chevron Corp.', type: 'Equity', region: 'United States' },
-        
-        // Aerospace
-        { symbol: 'BA', name: 'Boeing Co.', type: 'Equity', region: 'United States' },
-        { symbol: 'LMT', name: 'Lockheed Martin Corp.', type: 'Equity', region: 'United States' },
-        
-        // Auto
-        { symbol: 'F', name: 'Ford Motor Co.', type: 'Equity', region: 'United States' },
-        { symbol: 'GM', name: 'General Motors Co.', type: 'Equity', region: 'United States' }
-      ].filter(stock => 
-        stock.name.toLowerCase().includes(query.toLowerCase()) ||
-        stock.symbol.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      res.json({ data: demoStocks });
-    }
-  } catch (error) {
-    console.error('Stock search error:', error);
-    res.status(500).json({ error: 'Failed to search stocks' });
-  }
-});
-
-// ===== SPORTS API =====
-app.get('/api/sports', async (req, res) => {
-  const { league = 'nfl', teams = '' } = req.query;
-  const cacheKey = getCacheKey('sports', { league, teams });
-  
-  // Check cache first
-  const cached = cache.get(cacheKey);
-  if (cached && isCacheValid(cached.timestamp)) {
-    return res.json({ data: cached.data });
-  }
-
-  try {
-    // Demo sports data with more realistic structure
-    const leagueNames = {
-      nfl: 'NFL',
-      nba: 'NBA',
-      mlb: 'MLB',
-      nhl: 'NHL',
-      soccer: 'Premier League'
-    };
-    
-    const teamsByLeague = {
-      nfl: ['Patriots', 'Cowboys', 'Packers', 'Chiefs', '49ers'],
-      nba: ['Lakers', 'Warriors', 'Celtics', 'Bulls', 'Heat'],
-      mlb: ['Yankees', 'Dodgers', 'Red Sox', 'Cubs', 'Giants'],
-      nhl: ['Bruins', 'Rangers', 'Blackhawks', 'Kings', 'Penguins'],
-      soccer: ['Arsenal', 'Chelsea', 'Liverpool', 'Man City', 'Man United']
-    };
-    
-    const leagueTeams = teamsByLeague[league] || teamsByLeague.nfl;
-    
-    const games = Array.from({ length: 3 }, (_, i) => {
-      const homeTeam = leagueTeams[Math.floor(Math.random() * leagueTeams.length)];
-      let awayTeam = leagueTeams[Math.floor(Math.random() * leagueTeams.length)];
-      while (awayTeam === homeTeam) {
-        awayTeam = leagueTeams[Math.floor(Math.random() * leagueTeams.length)];
-      }
-      
-      const homeScore = Math.floor(Math.random() * 50) + 10;
-      const awayScore = Math.floor(Math.random() * 50) + 10;
-      const status = i === 0 ? 'Live' : (i === 1 ? 'Final' : 'Scheduled');
-      
-      return {
-        id: i + 1,
-        homeTeam,
-        awayTeam,
-        homeScore: status === 'Scheduled' ? null : homeScore,
-        awayScore: status === 'Scheduled' ? null : awayScore,
-        status,
-        quarter: status === 'Live' ? `${Math.floor(Math.random() * 4) + 1}Q` : null,
-        timeRemaining: status === 'Live' ? `${Math.floor(Math.random() * 15)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}` : null,
-        date: new Date(Date.now() + (i - 1) * 24 * 60 * 60 * 1000).toISOString()
-      };
-    });
-    
-    const sportsData = {
-      league: leagueNames[league] || 'NFL',
-      games,
-      lastUpdated: new Date().toISOString(),
-      demo: true
-    };
-    
-    cache.set(cacheKey, { data: sportsData, timestamp: Date.now() });
-    res.json({ data: sportsData });
-  } catch (error) {
-    console.error('Sports API error:', error);
-    res.status(500).json({ error: 'Failed to fetch sports data' });
-  }
-});
-
 // ===== COUNTDOWN API =====
 app.get('/api/countdown', async (req, res) => {
   const { 
@@ -713,15 +555,19 @@ app.get('/health', (req, res) => {
     version: '2.0.0',
     environment: process.env.NODE_ENV || 'development',
     features: {
+      authentication: true,
       weather: !!process.env.OPENWEATHER_API_KEY,
       stocks: !!process.env.ALPHA_VANTAGE_API_KEY,
       crypto: true, // CoinGecko free API
-      sports: 'demo', // Demo data only
-      search: true
+      userDashboards: true
     },
     cache: {
       entries: cache.size,
       rateLimitEntries: RATE_LIMIT_CACHE.size
+    },
+    users: {
+      registered: users.size,
+      activeSessions: sessions.size
     },
     uptime: process.uptime()
   };
@@ -734,8 +580,26 @@ app.get('/api/docs', (req, res) => {
   const docs = {
     title: 'Enhanced Dashboard API',
     version: '2.0.0',
-    description: 'REST API for the Enhanced Dashboard application',
+    description: 'REST API for the Enhanced Dashboard application with authentication',
     baseUrl: `${req.protocol}://${req.get('host')}`,
+    authentication: {
+      'POST /api/auth/register': {
+        description: 'Register a new user account',
+        body: { email: 'string', password: 'string', name: 'string (optional)' }
+      },
+      'POST /api/auth/login': {
+        description: 'Login with email and password',
+        body: { email: 'string', password: 'string' }
+      },
+      'POST /api/auth/logout': {
+        description: 'Logout and invalidate session',
+        body: { sessionId: 'string' }
+      },
+      'GET /api/auth/verify': {
+        description: 'Verify session token',
+        headers: { Authorization: 'Bearer <sessionId>' }
+      }
+    },
     endpoints: {
       'GET /api/weather': {
         description: 'Get current weather data for a location',
@@ -761,32 +625,6 @@ app.get('/api/docs', (req, res) => {
         rateLimit: '4 requests per minute per IP (Alpha Vantage limit)',
         note: 'Requires ALPHA_VANTAGE_API_KEY environment variable'
       },
-      'GET /api/sports': {
-        description: 'Get sports scores and schedules (demo data)',
-        parameters: {
-          league: 'Sports league: nfl, nba, mlb, nhl, soccer (default: nfl)',
-          teams: 'Comma-separated team IDs (optional)'
-        }
-      },
-      'GET /api/search/cities': {
-        description: 'Search for cities for weather widgets',
-        parameters: {
-          q: 'Search query (minimum 2 characters)'
-        }
-      },
-      'GET /api/search/crypto': {
-        description: 'Search for cryptocurrencies',
-        parameters: {
-          q: 'Search query (minimum 1 character)'
-        }
-      },
-      'GET /api/search/stocks': {
-        description: 'Search for stocks via Alpha Vantage',
-        parameters: {
-          q: 'Search query (minimum 1 character)'
-        },
-        rateLimit: '2 requests per minute per IP'
-      },
       'GET /api/countdown': {
         description: 'Create countdown timers',
         parameters: {
@@ -794,6 +632,15 @@ app.get('/api/docs', (req, res) => {
           targetDate: 'ISO date string (default: 2025-12-31T23:59:59)',
           timezone: 'Timezone (default: UTC)'
         }
+      },
+      'GET /api/user/dashboard': {
+        description: 'Get user dashboard layout (requires authentication)',
+        headers: { Authorization: 'Bearer <sessionId>' }
+      },
+              'POST /api/user/dashboard': {
+        description: 'Save user dashboard layout (requires authentication)',
+        headers: { Authorization: 'Bearer <sessionId>' },
+        body: { layout: 'array of widget configurations' }
       },
       'GET /api/esp32/:deviceId': {
         description: 'Get all widget data for ESP32 devices',
@@ -849,7 +696,7 @@ app.use((err, req, res, next) => {
 });
 
 // ===== CLEANUP =====
-// Clean up cache and rate limit data periodically
+// Clean up cache, rate limit data, and expired sessions periodically
 setInterval(() => {
   const now = Date.now();
   
@@ -869,6 +716,13 @@ setInterval(() => {
       RATE_LIMIT_CACHE.set(key, validRequests);
     }
   }
+  
+  // Clean expired sessions (24 hours)
+  for (const [sessionId, session] of sessions.entries()) {
+    if (now - session.createdAt > 24 * 60 * 60 * 1000) {
+      sessions.delete(sessionId);
+    }
+  }
 }, 10 * 60 * 1000); // Every 10 minutes
 
 // ===== SERVER STARTUP =====
@@ -883,7 +737,8 @@ app.listen(PORT, () => {
   console.log(`   ✅ Alpha Vantage (Stocks): ${process.env.ALPHA_VANTAGE_API_KEY ? 'ACTIVE' : 'MISSING - Using demo data'}`);
   console.log(`   ${process.env.OPENWEATHER_API_KEY ? '✅' : '⚠️ '} OpenWeather (Weather): ${process.env.OPENWEATHER_API_KEY ? 'ACTIVE' : 'MISSING - Using demo data'}`);
   console.log(`   ✅ CoinGecko (Crypto): ACTIVE (Free API)`);
-  console.log(`   ⚠️  Sports: Demo data only`);
+  console.log(`   ✅ Authentication: ACTIVE (In-memory storage)`);
+  console.log(`   ✅ User Dashboards: ACTIVE`);
   
   if (!process.env.ALPHA_VANTAGE_API_KEY) {
     console.log('\n⚠️  To enable real stock data:');
@@ -898,6 +753,12 @@ app.listen(PORT, () => {
     console.log('   Local: Add OPENWEATHER_API_KEY=your_key to .env file');
     console.log('   Get key: https://openweathermap.org/api');
   }
+  
+  console.log('\n🔐 Authentication Features:');
+  console.log('   • User registration and login');
+  console.log('   • Session-based authentication');
+  console.log('   • Personal dashboard layouts');
+  console.log('   • Demo mode for unauthenticated users');
   
   console.log('\n🚀 Server ready for requests!');
 });
