@@ -1,540 +1,440 @@
-// Main Dashboard Application
-class Dashboard {
-  constructor() {
-    this.grid = null;
-    this.widgets = new Map();
-    this.theme = 'light';
-    this.widgetCounter = 0;
+// Widget modules (simplified since main logic is now in HTML)
+const WidgetModules = {
+  weather: {
+    name: 'Weather',
+    icon: 'fas fa-cloud-sun',
+    defaultSize: { w: 4, h: 3 },
     
-    // Try to load theme from localStorage with fallback
-    try {
-      this.theme = localStorage.getItem('dashboard-theme') || 'light';
-    } catch (e) {
-      console.warn('Could not access localStorage for theme:', e);
-    }
+    async fetchData(config = {}) {
+      const { location = 'New York', units = 'imperial' } = config;
+      const response = await fetch(`/api/weather?location=${encodeURIComponent(location)}&units=${units}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      return result.data;
+    },
     
-    this.init();
-  }
-  
-  init() {
-    this.initializeTheme();
-    this.initializeGrid();
-    this.setupEventListeners();
-    this.loadLayout();
-    this.checkEmptyState();
-  }
-  
-  initializeTheme() {
-    document.body.dataset.theme = this.theme;
-    const themeIcon = document.querySelector('#theme-toggle i');
-    if (themeIcon) {
-      themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    render(container, data) {
+      const tempUnit = data.units === 'metric' ? '°C' : '°F';
+      
+      container.innerHTML = `
+        <div class="widget-data">
+          <div class="widget-main">${data.temp}${tempUnit}</div>
+          <div class="widget-sub">${data.condition}</div>
+          <div class="widget-location">${data.location}</div>
+          ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
+          <div class="widget-details">
+            <div class="detail-item">
+              <span class="detail-label">Humidity</span>
+              <span class="detail-value">${data.humidity}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Wind</span>
+              <span class="detail-value">${data.wind} mph</span>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+    
+    configure() {
+      const location = prompt('Enter city name:', 'New York');
+      if (!location) return null;
+      
+      const units = confirm('Use Celsius? (Cancel for Fahrenheit)') ? 'metric' : 'imperial';
+      return { location, units };
     }
-  }
-  
-  initializeGrid() {
-    this.grid = GridStack.init({
-      cellHeight: 100,
-      margin: 16,
-      float: false,
-      animate: true,
-      resizable: {
-        handles: 'se'
-      },
-      draggable: {
-        handle: '.widget-header'
+  },
+
+  crypto: {
+    name: 'Crypto',
+    icon: 'fab fa-bitcoin',
+    defaultSize: { w: 4, h: 3 },
+    
+    async fetchData(config = {}) {
+      const { coin = 'bitcoin', currency = 'usd' } = config;
+      const response = await fetch(`/api/crypto?coin=${coin}&currency=${currency}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      return result.data;
+    },
+    
+    render(container, data) {
+      const changeClass = parseFloat(data.change24h) >= 0 ? 'positive' : 'negative';
+      const changeIcon = parseFloat(data.change24h) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+      const symbol = data.currency === 'usd' ? '$' : data.currency.toUpperCase();
+      
+      container.innerHTML = `
+        <div class="widget-data">
+          <div class="widget-main">${symbol}${parseFloat(data.price).toLocaleString()}</div>
+          <div class="widget-sub">
+            <i class="fas ${changeIcon}"></i>
+            <span class="${changeClass}">${data.change24h}%</span>
+          </div>
+          <div class="widget-location">${data.coin.charAt(0).toUpperCase() + data.coin.slice(1)}</div>
+          <div class="widget-details">
+            <div class="detail-item">
+              <span class="detail-label">Market Cap</span>
+              <span class="detail-value">${this.formatNumber(data.marketCap)}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Volume</span>
+              <span class="detail-value">${this.formatNumber(data.volume24h)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+    
+    configure() {
+      const coin = prompt('Enter cryptocurrency (e.g., bitcoin, ethereum):', 'bitcoin');
+      if (!coin) return null;
+      
+      const currency = prompt('Enter currency (usd, eur, btc):', 'usd');
+      return { coin: coin.toLowerCase(), currency: currency.toLowerCase() };
+    },
+    
+    formatNumber(num) {
+      if (!num) return 'N/A';
+      if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+      if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+      if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+      if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+      return num.toFixed(0);
+    }
+  },
+
+  stocks: {
+    name: 'Stocks',
+    icon: 'fas fa-chart-line',
+    defaultSize: { w: 4, h: 3 },
+    
+    async fetchData(config = {}) {
+      const { symbol = 'AAPL' } = config;
+      const response = await fetch(`/api/stocks?symbol=${symbol.toUpperCase()}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      return result.data;
+    },
+    
+    render(container, data) {
+      const changeClass = parseFloat(data.change) >= 0 ? 'positive' : 'negative';
+      const changeIcon = parseFloat(data.change) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+      
+      container.innerHTML = `
+        <div class="widget-data">
+          <div class="widget-main">$${parseFloat(data.price).toFixed(2)}</div>
+          <div class="widget-sub">
+            <i class="fas ${changeIcon}"></i>
+            <span class="${changeClass}">${data.change} (${data.changePercent})</span>
+          </div>
+          <div class="widget-location">${data.symbol}</div>
+          ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
+          <div class="widget-details">
+            <div class="detail-item">
+              <span class="detail-label">Volume</span>
+              <span class="detail-value">${this.formatVolume(data.volume)}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Prev Close</span>
+              <span class="detail-value">$${parseFloat(data.previousClose).toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+    
+    configure() {
+      const symbol = prompt('Enter stock symbol (e.g., AAPL, GOOGL):', 'AAPL');
+      return symbol ? { symbol: symbol.toUpperCase() } : null;
+    },
+    
+    formatVolume(volume) {
+      if (!volume) return 'N/A';
+      if (volume >= 1e6) return (volume / 1e6).toFixed(1) + 'M';
+      if (volume >= 1e3) return (volume / 1e3).toFixed(1) + 'K';
+      return volume.toString();
+    }
+  },
+
+  countdown: {
+    name: 'Countdown',
+    icon: 'fas fa-hourglass-half',
+    defaultSize: { w: 6, h: 3 },
+    
+    async fetchData(config = {}) {
+      const { title = 'New Year', targetDate = '2025-12-31T23:59:59' } = config;
+      const response = await fetch(`/api/countdown?title=${encodeURIComponent(title)}&targetDate=${encodeURIComponent(targetDate)}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      return result.data;
+    },
+    
+    render(container, data) {
+      if (data.completed) {
+        container.innerHTML = `
+          <div class="widget-data">
+            <div class="widget-main">🎉</div>
+            <div class="widget-sub">${data.title}</div>
+            <div class="widget-location">Completed!</div>
+          </div>
+        `;
+        return;
       }
-    });
-    
-    // Save layout on change
-    this.grid.on('change', () => {
-      this.saveLayout();
-    });
-  }
-  
-  setupEventListeners() {
-    // Theme toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-      themeToggle.addEventListener('click', () => {
-        this.toggleTheme();
-      });
-    }
-    
-    // Add widget buttons
-    const addWidget = document.getElementById('add-widget');
-    if (addWidget) {
-      addWidget.addEventListener('click', () => {
-        this.showWidgetPicker();
-      });
-    }
-    
-    const addFirstWidget = document.getElementById('add-first-widget');
-    if (addFirstWidget) {
-      addFirstWidget.addEventListener('click', () => {
-        this.showWidgetPicker();
-      });
-    }
-    
-    // Reset layout
-    const resetLayout = document.getElementById('reset-layout');
-    if (resetLayout) {
-      resetLayout.addEventListener('click', () => {
-        if (confirm('Reset layout? This will remove all widgets.')) {
-          this.resetLayout();
-        }
-      });
-    }
-    
-    // Widget picker events
-    const closePicker = document.getElementById('close-picker');
-    if (closePicker) {
-      closePicker.addEventListener('click', () => {
-        this.hideWidgetPicker();
-      });
-    }
-    
-    // Click outside modal to close
-    const widgetPicker = document.getElementById('widget-picker');
-    if (widgetPicker) {
-      widgetPicker.addEventListener('click', (e) => {
-        if (e.target.id === 'widget-picker') {
-          this.hideWidgetPicker();
-        }
-      });
-    }
-    
-    // Widget type selection
-    document.querySelectorAll('.widget-option').forEach(option => {
-      option.addEventListener('click', () => {
-        const type = option.dataset.type;
-        this.addWidget(type);
-        this.hideWidgetPicker();
-      });
-    });
-  }
-  
-  toggleTheme() {
-    this.theme = this.theme === 'light' ? 'dark' : 'light';
-    document.body.dataset.theme = this.theme;
-    
-    try {
-      localStorage.setItem('dashboard-theme', this.theme);
-    } catch (e) {
-      console.warn('Could not save theme to localStorage:', e);
-    }
-    
-    const themeIcon = document.querySelector('#theme-toggle i');
-    if (themeIcon) {
-      themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-    }
-    
-    this.showToast(`Switched to ${this.theme} theme`, 'info');
-  }
-  
-  showWidgetPicker() {
-    const picker = document.getElementById('widget-picker');
-    if (picker) {
-      picker.style.display = 'flex';
-    }
-  }
-  
-  hideWidgetPicker() {
-    const picker = document.getElementById('widget-picker');
-    if (picker) {
-      picker.style.display = 'none';
-    }
-  }
-  
-  async addWidget(type, config = {}, gridOptions = {}) {
-    const module = WidgetModules[type];
-    if (!module) {
-      this.showToast(`Widget type "${type}" not found`, 'error');
-      return;
-    }
-    
-    const widgetId = `widget-${type}-${++this.widgetCounter}`;
-    
-    // Create widget element
-    const widgetEl = document.createElement('div');
-    widgetEl.className = `widget ${type}-widget`;
-    widgetEl.dataset.widgetId = widgetId;
-    widgetEl.dataset.widgetType = type;
-    
-    // Create widget structure
-    widgetEl.innerHTML = `
-      <div class="widget-header">
-        <div class="widget-title">
-          <i class="${module.icon}"></i>
-          <span>${module.name}</span>
-        </div>
-        <div class="widget-actions">
-          <button class="widget-action refresh-widget" title="Refresh">
-            <i class="fas fa-sync-alt"></i>
-          </button>
-          <button class="widget-action configure-widget" title="Configure">
-            <i class="fas fa-cog"></i>
-          </button>
-          <button class="widget-action remove-widget" title="Remove">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      </div>
-      <div class="widget-content">
-        <div class="loading">
-          <div class="spinner"></div>
-          <span>Loading...</span>
-        </div>
-      </div>
-    `;
-    
-    // Add to grid with default size
-    const defaultSize = module.defaultSize || { w: 4, h: 3 };
-    const gridItem = this.grid.addWidget(widgetEl, {
-      w: gridOptions.w || defaultSize.w,
-      h: gridOptions.h || defaultSize.h,
-      x: gridOptions.x,
-      y: gridOptions.y,
-      autoPosition: !gridOptions.x && !gridOptions.y
-    });
-    
-    // Setup widget actions
-    this.setupWidgetActions(widgetEl);
-    
-    // Store widget info
-    this.widgets.set(widgetId, {
-      id: widgetId,
-      type: type,
-      config: config,
-      element: widgetEl
-    });
-    
-    // Load widget data
-    this.loadWidgetData(widgetId);
-    
-    // Update empty state
-    this.checkEmptyState();
-    
-    this.showToast(`Added ${module.name} widget`, 'success');
-  }
-  
-  setupWidgetActions(widgetEl) {
-    const widgetId = widgetEl.dataset.widgetId;
-    
-    // Refresh button
-    const refreshBtn = widgetEl.querySelector('.refresh-widget');
-    if (refreshBtn) {
-      refreshBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.loadWidgetData(widgetId);
-      });
-    }
-    
-    // Configure button
-    const configBtn = widgetEl.querySelector('.configure-widget');
-    if (configBtn) {
-      configBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.configureWidget(widgetId);
-      });
-    }
-    
-    // Remove button
-    const removeBtn = widgetEl.querySelector('.remove-widget');
-    if (removeBtn) {
-      removeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.removeWidget(widgetId);
-      });
-    }
-  }
-  
-  async loadWidgetData(widgetId) {
-    const widget = this.widgets.get(widgetId);
-    if (!widget) return;
-    
-    const module = WidgetModules[widget.type];
-    const contentEl = widget.element.querySelector('.widget-content');
-    
-    try {
-      // Show loading
-      contentEl.innerHTML = `
-        <div class="loading">
-          <div class="spinner"></div>
-          <span>Loading...</span>
+      
+      const diff = new Date(data.targetDate) - new Date();
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      container.innerHTML = `
+        <div class="widget-data">
+          <div class="widget-sub">${data.title}</div>
+          <div class="countdown-timer">
+            <div class="countdown-unit">
+              <span class="countdown-value">${days}</span>
+              <span class="countdown-label">Days</span>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-value">${hours.toString().padStart(2, '0')}</span>
+              <span class="countdown-label">Hours</span>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-value">${minutes.toString().padStart(2, '0')}</span>
+              <span class="countdown-label">Min</span>
+            </div>
+            <div class="countdown-unit">
+              <span class="countdown-value">${seconds.toString().padStart(2, '0')}</span>
+              <span class="countdown-label">Sec</span>
+            </div>
+          </div>
         </div>
       `;
       
-      // Fetch data
-      const data = await module.fetchData(widget.config);
-      
-      // Render widget
-      module.render(contentEl, data);
-      
-    } catch (error) {
-      console.error(`Error loading widget ${widget.type}:`, error);
-      contentEl.innerHTML = `
-        <div class="widget-error">
-          <i class="fas fa-exclamation-triangle"></i>
-          <p>Failed to load data</p>
-          <button class="btn btn-ghost" onclick="dashboard.loadWidgetData('${widgetId}')">
-            Retry
-          </button>
-        </div>
-      `;
-      this.showToast(`Failed to load ${module.name}`, 'error');
-    }
-  }
-  
-  configureWidget(widgetId) {
-    const widget = this.widgets.get(widgetId);
-    if (!widget) return;
-    
-    const module = WidgetModules[widget.type];
-    
-    try {
-      const newConfig = module.configure(widget.config);
-      
-      if (newConfig) {
-        widget.config = { ...widget.config, ...newConfig };
-        this.loadWidgetData(widgetId);
-        this.saveLayout();
-        this.showToast(`${module.name} configured`, 'success');
-      }
-    } catch (error) {
-      console.error('Error configuring widget:', error);
-      this.showToast('Error configuring widget', 'error');
-    }
-  }
-  
-  removeWidget(widgetId) {
-    const widget = this.widgets.get(widgetId);
-    if (!widget) return;
-    
-    if (confirm(`Remove ${WidgetModules[widget.type].name} widget?`)) {
-      this.grid.removeWidget(widget.element);
-      this.widgets.delete(widgetId);
-      this.checkEmptyState();
-      this.saveLayout();
-      this.showToast('Widget removed', 'info');
-    }
-  }
-  
-  saveLayout() {
-    const layout = [];
-    
-    this.widgets.forEach((widget, widgetId) => {
-      const gridNode = widget.element.gridstackNode;
-      if (gridNode) {
-        layout.push({
-          id: widgetId,
-          type: widget.type,
-          config: widget.config,
-          x: gridNode.x,
-          y: gridNode.y,
-          w: gridNode.w,
-          h: gridNode.h
-        });
-      }
-    });
-    
-    try {
-      localStorage.setItem('dashboard-layout', JSON.stringify(layout));
-    } catch (e) {
-      console.warn('Could not save layout to localStorage:', e);
-    }
-  }
-  
-  loadLayout() {
-    try {
-      const saved = localStorage.getItem('dashboard-layout');
-      if (!saved) return;
-      
-      const layout = JSON.parse(saved);
-      
-      // Sort by position to maintain order
-      layout.sort((a, b) => a.y - b.y || a.x - b.x);
-      
-      layout.forEach(item => {
-        this.addWidget(item.type, item.config, {
-          x: item.x,
-          y: item.y,
-          w: item.w,
-          h: item.h
-        });
-      });
-    } catch (error) {
-      console.error('Error loading layout:', error);
-      this.showToast('Error loading saved layout', 'error');
-    }
-  }
-  
-  resetLayout() {
-    // Remove all widgets
-    this.widgets.forEach((widget) => {
-      this.grid.removeWidget(widget.element);
-    });
-    this.widgets.clear();
-    
-    // Clear saved layout
-    try {
-      localStorage.removeItem('dashboard-layout');
-    } catch (e) {
-      console.warn('Could not clear layout from localStorage:', e);
-    }
-    
-    // Reset counter
-    this.widgetCounter = 0;
-    
-    // Update UI
-    this.checkEmptyState();
-    this.showToast('Layout reset', 'info');
-  }
-  
-  checkEmptyState() {
-    const emptyState = document.getElementById('empty-state');
-    const hasWidgets = this.widgets.size > 0;
-    
-    if (emptyState) {
-      emptyState.style.display = hasWidgets ? 'none' : 'flex';
-    }
-  }
-  
-  showToast(message, type = 'info') {
-    const toastContainer = document.getElementById('toast-container');
-    if (!toastContainer) return;
-    
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    
-    toastContainer.appendChild(toast);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.style.opacity = '0';
-        setTimeout(() => {
-          if (toast.parentNode) {
-            toast.parentNode.removeChild(toast);
-          }
-        }, 300);
-      }
-    }, 3000);
-  }
-  
-  // Auto-refresh widgets every 5 minutes
-  startAutoRefresh() {
-    setInterval(() => {
-      this.widgets.forEach((widget, widgetId) => {
-        // Skip notes and todo widgets from auto-refresh
-        if (!['notes', 'todo'].includes(widget.type)) {
-          this.loadWidgetData(widgetId);
+      // Update every second
+      setTimeout(() => {
+        if (container.closest('.widget')) {
+          this.render(container, data);
         }
-      });
-    }, 5 * 60 * 1000); // 5 minutes
-  }
-  
-  // Add some default widgets for first-time users
-  addDefaultWidgets() {
-    if (this.widgets.size === 0) {
-      let hasLayout = false;
+      }, 1000);
+    },
+    
+    configure() {
+      const title = prompt('Enter event title:', 'New Year');
+      if (!title) return null;
+      
+      const dateStr = prompt('Enter target date (YYYY-MM-DD):', '2025-12-31');
+      if (!dateStr) return null;
+      
       try {
-        hasLayout = !!localStorage.getItem('dashboard-layout');
-      } catch (e) {
-        console.warn('Could not check for saved layout:', e);
-      }
-      
-      if (!hasLayout) {
-        setTimeout(() => {
-          this.addWidget('weather');
-          this.addWidget('crypto');
-          this.addWidget('countdown', { 
-            title: 'New Year 2026', 
-            targetDate: '2026-01-01T00:00:00' 
-          });
-          this.addWidget('notes');
-        }, 500);
+        const targetDate = new Date(dateStr + 'T23:59:59').toISOString();
+        return { title, targetDate };
+      } catch (error) {
+        alert('Invalid date format. Please use YYYY-MM-DD format.');
+        return null;
       }
     }
-  }
-}
+  },
 
-// Initialize dashboard when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  // Check if GridStack is available
-  if (typeof GridStack === 'undefined') {
-    console.error('GridStack is not available');
-    const errorMsg = document.createElement('div');
-    errorMsg.innerHTML = `
-      <div style="text-align: center; padding: 2rem; color: #ef4444;">
-        <h2>Error: GridStack library failed to load</h2>
-        <p>Please check your internet connection and refresh the page.</p>
-      </div>
-    `;
-    document.body.appendChild(errorMsg);
-    return;
-  }
-  
-  // Check if WidgetModules is available
-  if (typeof WidgetModules === 'undefined') {
-    console.error('WidgetModules is not available');
-    const errorMsg = document.createElement('div');
-    errorMsg.innerHTML = `
-      <div style="text-align: center; padding: 2rem; color: #ef4444;">
-        <h2>Error: Widget modules failed to load</h2>
-        <p>Please refresh the page to try again.</p>
-      </div>
-    `;
-    document.body.appendChild(errorMsg);
-    return;
-  }
-  
-  try {
-    window.dashboard = new Dashboard();
+  notes: {
+    name: 'Notes',
+    icon: 'fas fa-sticky-note',
+    defaultSize: { w: 4, h: 4 },
     
-    // Start auto-refresh
-    dashboard.startAutoRefresh();
+    async fetchData(config = {}) {
+      const { title = 'Notes', content = '' } = config;
+      try {
+        const response = await fetch(`/api/notes?title=${encodeURIComponent(title)}&content=${encodeURIComponent(content)}`);
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        return { ...result.data, ...config };
+      } catch (error) {
+        // Fallback for local operation
+        return { title, content, showWordCount: true, autoSave: true };
+      }
+    },
     
-    // Add default widgets for new users
-    dashboard.addDefaultWidgets();
+    render(container, data) {
+      const noteId = 'note-' + Math.random().toString(36).substr(2, 9);
+      
+      container.innerHTML = `
+        <div class="notes-widget-content" style="height: 100%; display: flex; flex-direction: column;">
+          <textarea 
+            class="notes-textarea" 
+            placeholder="Enter your notes here..."
+            data-note-id="${noteId}"
+            style="flex: 1; width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; font-family: inherit; font-size: 0.875rem; background: var(--background); color: var(--text); resize: none;"
+          >${data.content || ''}</textarea>
+          <div class="notes-stats" style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+            <span id="word-count-${noteId}">0 words</span>
+          </div>
+        </div>
+      `;
+      
+      const textarea = container.querySelector('.notes-textarea');
+      const wordCount = container.querySelector(`#word-count-${noteId}`);
+      
+      const updateStats = () => {
+        const words = textarea.value.trim() ? textarea.value.trim().split(/\s+/).length : 0;
+        wordCount.textContent = `${words} words`;
+        
+        // Auto-save to localStorage
+        try {
+          localStorage.setItem(`notes-${noteId}`, textarea.value);
+        } catch (e) {
+          console.warn('Could not save to localStorage:', e);
+        }
+      };
+      
+      textarea.addEventListener('input', updateStats);
+      updateStats();
+      
+      // Load saved content
+      try {
+        const saved = localStorage.getItem(`notes-${noteId}`);
+        if (saved) {
+          textarea.value = saved;
+          updateStats();
+        }
+      } catch (e) {
+        console.warn('Could not load from localStorage:', e);
+      }
+    },
     
-    console.log('🚀 Dashboard initialized successfully');
-  } catch (error) {
-    console.error('Error initializing dashboard:', error);
-    const errorMsg = document.createElement('div');
-    errorMsg.innerHTML = `
-      <div style="text-align: center; padding: 2rem; color: #ef4444;">
-        <h2>Error: Dashboard failed to initialize</h2>
-        <p>Please refresh the page to try again.</p>
-        <details style="margin-top: 1rem;">
-          <summary>Error details</summary>
-          <pre style="text-align: left; margin-top: 0.5rem;">${error.message}</pre>
-        </details>
-      </div>
-    `;
-    document.body.appendChild(errorMsg);
-  }
-});
+    configure() {
+      const title = prompt('Enter note title:', 'Notes');
+      return title ? { title } : null;
+    }
+  },
 
-// Global error handler
-window.addEventListener('error', (e) => {
-  console.error('Global error:', e.error);
-  if (window.dashboard) {
-    dashboard.showToast('An error occurred', 'error');
-  }
-});
-
-// Handle page visibility changes to pause/resume auto-refresh
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && window.dashboard) {
-    // Refresh widgets when page becomes visible
-    setTimeout(() => {
-      dashboard.widgets.forEach((widget, widgetId) => {
-        if (!['notes', 'todo'].includes(widget.type)) {
-          dashboard.loadWidgetData(widgetId);
+  todo: {
+    name: 'Todo',
+    icon: 'fas fa-tasks',
+    defaultSize: { w: 4, h: 4 },
+    
+    async fetchData(config = {}) {
+      const { title = 'Todo List' } = config;
+      try {
+        const response = await fetch(`/api/todo?title=${encodeURIComponent(title)}`);
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+        return { ...result.data, ...config };
+      } catch (error) {
+        // Fallback for local operation
+        return { title, items: [], showCompleted: true, maxItems: 10 };
+      }
+    },
+    
+    render(container, data) {
+      const todoId = 'todo-' + Math.random().toString(36).substr(2, 9);
+      
+      // Load saved todos
+      let todos = [];
+      try {
+        todos = JSON.parse(localStorage.getItem(`todos-${todoId}`) || '[]');
+      } catch (e) {
+        console.warn('Could not load todos from localStorage:', e);
+        todos = [];
+      }
+      
+      const renderTodos = () => {
+        const todoList = todos.map((todo, index) => `
+          <div class="todo-item ${todo.completed ? 'completed' : ''}" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; border-bottom: 1px solid var(--border);">
+            <input 
+              type="checkbox" 
+              class="todo-checkbox" 
+              ${todo.completed ? 'checked' : ''}
+              data-index="${index}"
+              style="accent-color: var(--primary);"
+            >
+            <span class="todo-text" style="flex: 1; font-size: 0.875rem; ${todo.completed ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${todo.text}</span>
+            <button class="widget-action delete-todo" data-index="${index}" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.25rem;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `).join('');
+        
+        return `
+          <div class="todo-widget-content" style="height: 100%; display: flex; flex-direction: column; gap: 1rem;">
+            <div class="todo-input-container">
+              <input 
+                type="text" 
+                class="todo-input" 
+                placeholder="Add new task..."
+                data-todo-id="${todoId}"
+                style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); color: var(--text);"
+              >
+            </div>
+            <div class="todo-list" style="flex: 1; overflow-y: auto;">
+              ${todoList}
+            </div>
+            <div class="todo-stats" style="font-size: 0.75rem; color: var(--text-muted);">
+              ${todos.filter(t => !t.completed).length} active, 
+              ${todos.filter(t => t.completed).length} completed
+            </div>
+          </div>
+        `;
+      };
+      
+      container.innerHTML = renderTodos();
+      
+      // Add event listeners
+      const input = container.querySelector('.todo-input');
+      const checkboxes = container.querySelectorAll('.todo-checkbox');
+      const deleteButtons = container.querySelectorAll('.delete-todo');
+      
+      // Add new todo
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && input.value.trim()) {
+          todos.push({ text: input.value.trim(), completed: false });
+          input.value = '';
+          try {
+            localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          } catch (err) {
+            console.warn('Could not save todos to localStorage:', err);
+          }
+          container.innerHTML = renderTodos();
+          this.render(container, data); // Re-render to reattach events
         }
       });
-    }, 1000);
+      
+      // Toggle completion
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          todos[index].completed = e.target.checked;
+          try {
+            localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          } catch (err) {
+            console.warn('Could not save todos to localStorage:', err);
+          }
+          container.innerHTML = renderTodos();
+          this.render(container, data); // Re-render to reattach events
+        });
+      });
+      
+      // Delete todo
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const index = parseInt(e.target.closest('.delete-todo').dataset.index);
+          todos.splice(index, 1);
+          try {
+            localStorage.setItem(`todos-${todoId}`, JSON.stringify(todos));
+          } catch (err) {
+            console.warn('Could not save todos to localStorage:', err);
+          }
+          container.innerHTML = renderTodos();
+          this.render(container, data); // Re-render to reattach events
+        });
+      });
+    },
+    
+    configure() {
+      const title = prompt('Enter todo list title:', 'Todo List');
+      return title ? { title } : null;
+    }
   }
-});
+};
+
+// Export for use in main application
+window.WidgetModules = WidgetModules;
