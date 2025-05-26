@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; connect-src 'self'; img-src 'self' data: https:;">
-  <title>Enhanced Dashboard</title>
+  <title>Enhanced Dashboard - Live Data & Customization</title>
   
   <!-- External CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack.min.css">
@@ -28,6 +27,7 @@
       --transition: all 0.2s ease;
       --success: #10b981;
       --error: #ef4444;
+      --warning: #f59e0b;
     }
 
     [data-theme="dark"] {
@@ -134,58 +134,63 @@
       color: var(--text);
     }
 
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #d97706;
+    }
+
     .btn-large {
       padding: 0.75rem 1.5rem;
       font-size: 1rem;
     }
 
-    .welcome-banner {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    .api-status-banner {
+      background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
       color: white;
-      padding: 2rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
       border-radius: var(--radius);
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .welcome-banner h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .welcome-banner p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-      margin-bottom: 1.5rem;
-    }
-
-    .welcome-actions {
       display: flex;
+      align-items: center;
       gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
+      animation: pulse 2s infinite;
     }
 
-    .btn-white {
-      background: white;
+    .api-status-banner.hidden {
+      display: none;
+    }
+
+    .api-setup-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .api-setup-card h3 {
       color: var(--primary);
-      border: 2px solid white;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .btn-white:hover {
-      background: transparent;
-      color: white;
+    .api-setup-card p {
+      margin-bottom: 1rem;
+      color: var(--text-muted);
     }
 
-    .btn-outline {
-      background: transparent;
-      color: white;
-      border: 2px solid white;
-    }
-
-    .btn-outline:hover {
-      background: white;
-      color: var(--primary);
+    .api-setup-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
 
     .widget {
@@ -198,6 +203,7 @@
       display: flex;
       flex-direction: column;
       transition: var(--transition);
+      position: relative;
     }
 
     .widget:hover {
@@ -292,6 +298,16 @@
     }
 
     .stocks-widget .widget-header {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sports-widget {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+
+    .sports-widget .widget-header {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.2);
     }
@@ -397,7 +413,7 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow-lg);
       width: 100%;
-      max-width: 700px;
+      max-width: 600px;
       max-height: 80vh;
       overflow: hidden;
       display: flex;
@@ -442,12 +458,14 @@
     .modal-body {
       flex: 1;
       overflow-y: auto;
+      padding: 1.5rem;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
+      margin-bottom: 1rem;
     }
 
     .form-label {
@@ -472,6 +490,22 @@
       box-shadow: 0 0 0 3px var(--primary-light);
     }
 
+    .form-select {
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--background);
+      color: var(--text);
+      font-size: 0.875rem;
+      transition: var(--transition);
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
     .hidden { display: none !important; }
     .positive { color: var(--success); }
     .negative { color: var(--error); }
@@ -481,7 +515,6 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1rem;
-      padding: 1.5rem;
     }
 
     .widget-option {
@@ -533,13 +566,14 @@
       border-radius: var(--radius);
       padding: 0.75rem 1rem;
       box-shadow: var(--shadow-lg);
-      max-width: 300px;
+      max-width: 320px;
       animation: slideInRight 0.3s ease;
     }
 
     .toast.success { border-left: 4px solid var(--success); }
     .toast.error { border-left: 4px solid var(--error); }
     .toast.info { border-left: 4px solid var(--primary); }
+    .toast.warning { border-left: 4px solid var(--warning); }
 
     .loading {
       display: flex;
@@ -559,6 +593,28 @@
       animation: spin 1s linear infinite;
     }
 
+    .live-indicator {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .demo-indicator {
+      background: var(--warning);
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+
     @keyframes slideInRight {
       from {
         transform: translateX(100%);
@@ -572,6 +628,11 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
     @media (max-width: 768px) {
@@ -605,17 +666,8 @@
         max-width: none;
       }
       
-      .welcome-banner h1 {
-        font-size: 1.5rem;
-      }
-      
-      .welcome-banner p {
-        font-size: 1rem;
-      }
-      
-      .welcome-actions {
-        flex-direction: column;
-        align-items: center;
+      .api-setup-form {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -632,49 +684,6 @@
   </style>
 </head>
 <body data-theme="light">
-  <!-- Authentication Modal -->
-  <div id="auth-modal" class="modal">
-    <div class="modal-content" style="max-width: 400px;">
-      <div class="modal-header">
-        <h2 id="auth-title">Sign In</h2>
-        <button class="modal-close" id="close-auth">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      
-      <div class="modal-body">
-        <div style="padding: 1.5rem;">
-          <form id="auth-form">
-            <div class="form-group">
-              <label class="form-label" for="email">Email</label>
-              <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label" for="password">Password</label>
-              <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
-            </div>
-            
-            <div class="form-group hidden" id="confirm-password-group">
-              <label class="form-label" for="confirm-password">Confirm Password</label>
-              <input type="password" id="confirm-password" name="confirm-password" class="form-input" placeholder="Confirm your password">
-            </div>
-            
-            <button type="submit" class="btn btn-primary btn-large" id="auth-submit" style="width: 100%; margin-top: 1rem;">
-              <i class="fas fa-sign-in-alt"></i>
-              <span>Sign In</span>
-            </button>
-          </form>
-          
-          <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-            <p id="auth-switch-text">Don't have an account? <a href="#" id="auth-switch" style="color: var(--primary); text-decoration: none; font-weight: 500;">Sign up</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Dashboard -->
   <div id="dashboard-screen">
     <header class="header">
       <div class="header-content">
@@ -688,49 +697,32 @@
             <i class="fas fa-moon"></i>
           </button>
           
-          <button id="login-btn" class="btn btn-primary">
-            <i class="fas fa-sign-in-alt"></i>
-            <span>Login</span>
+          <button id="api-setup" class="btn btn-warning">
+            <i class="fas fa-key"></i>
+            <span>API Setup</span>
           </button>
           
-          <button id="register-btn" class="btn btn-ghost">
-            <i class="fas fa-user-plus"></i>
-            <span>Register</span>
+          <button id="add-widget" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            <span>Add Widget</span>
           </button>
           
-          <!-- Authenticated user controls (hidden by default) -->
-          <div id="authenticated-controls" class="hidden" style="display: flex; gap: 0.75rem; align-items: center;">
-            <button id="add-widget" class="btn btn-primary">
-              <i class="fas fa-plus"></i>
-              <span>Add Widget</span>
-            </button>
-            
-            <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
-              <i class="fas fa-refresh"></i>
-            </button>
-            
-            <button id="logout" class="btn btn-ghost">
-              <i class="fas fa-sign-out-alt"></i>
-              <span>Logout</span>
-            </button>
-          </div>
+          <button id="reset-layout" class="btn btn-ghost" title="Reset layout">
+            <i class="fas fa-refresh"></i>
+          </button>
         </div>
       </div>
     </header>
 
     <main class="dashboard">
-      <!-- Welcome Banner -->
-      <div id="welcome-banner" class="welcome-banner">
-        <h1>Welcome to Enhanced Dashboard</h1>
-        <p>Create and customize your perfect dashboard with real-time data widgets. See the live demo below!</p>
-        <div class="welcome-actions">
-          <button id="demo-login" class="btn btn-white btn-large">
-            <i class="fas fa-sign-in-alt"></i>
-            Get Started - Login
-          </button>
-          <button id="demo-register" class="btn btn-outline btn-large">
-            <i class="fas fa-user-plus"></i>
-            Create Account
+      <!-- API Status Banner -->
+      <div id="api-status-banner" class="api-status-banner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div>
+          <strong>Demo Mode Active</strong> - Set up your API keys to enable live data for Weather, Stocks, and Sports widgets.
+          <button id="quick-api-setup" class="btn btn-ghost" style="margin-left: 1rem;">
+            <i class="fas fa-key"></i>
+            Setup Now
           </button>
         </div>
       </div>
@@ -738,6 +730,99 @@
       <!-- Dashboard Grid -->
       <div class="grid-stack" id="dashboard-grid"></div>
     </main>
+  </div>
+
+  <!-- API Setup Modal -->
+  <div id="api-setup-modal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h2>API Setup - Enable Live Data</h2>
+        <button class="modal-close" id="close-api-setup">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="api-setup-card">
+          <h3><i class="fas fa-cloud-sun"></i> OpenWeatherMap API (Weather)</h3>
+          <p>Get real-time weather data. Free tier includes 1000 calls/day.</p>
+          <div class="api-setup-form">
+            <input type="password" id="weather-api-key" class="form-input" placeholder="Enter OpenWeatherMap API Key">
+            <button class="btn btn-primary" onclick="saveWeatherAPI()">Save</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">
+            <strong>Get your free key:</strong> <a href="https://openweathermap.org/api" target="_blank" style="color: var(--primary);">openweathermap.org/api</a>
+          </p>
+        </div>
+
+        <div class="api-setup-card">
+          <h3><i class="fas fa-chart-line"></i> Alpha Vantage API (Stocks)</h3>
+          <p>Get real-time stock market data. Free tier includes 25 calls/day, 5 calls/minute.</p>
+          <div class="api-setup-form">
+            <input type="password" id="stocks-api-key" class="form-input" placeholder="Enter Alpha Vantage API Key">
+            <button class="btn btn-primary" onclick="saveStocksAPI()">Save</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">
+            <strong>Get your free key:</strong> <a href="https://www.alphavantage.co/support/#api-key" target="_blank" style="color: var(--primary);">alphavantage.co/support/#api-key</a>
+          </p>
+        </div>
+
+        <div class="api-setup-card">
+          <h3><i class="fas fa-football-ball"></i> The Odds API (Sports)</h3>
+          <p>Get live sports odds and betting data. Free tier includes 500 requests/month.</p>
+          <div class="api-setup-form">
+            <input type="password" id="sports-api-key" class="form-input" placeholder="Enter The Odds API Key">
+            <button class="btn btn-primary" onclick="saveSportsAPI()">Save</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">
+            <strong>Get your free key:</strong> <a href="https://the-odds-api.com/" target="_blank" style="color: var(--primary);">the-odds-api.com</a>
+          </p>
+        </div>
+
+        <div style="background: var(--primary-light); padding: 1rem; border-radius: var(--radius); margin-top: 1rem;">
+          <h4 style="color: var(--primary); margin-bottom: 0.5rem;"><i class="fas fa-info-circle"></i> About API Keys</h4>
+          <ul style="margin-left: 1.5rem; color: var(--text-muted); font-size: 0.875rem;">
+            <li>API keys are stored locally in your browser</li>
+            <li>Crypto data doesn't require an API key (uses CoinGecko free tier)</li>
+            <li>All other widgets work without API keys</li>
+            <li>Setting up APIs enables real-time, accurate data</li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: center;">
+          <button class="btn btn-primary btn-large" onclick="closeAPISetup()">
+            <i class="fas fa-check"></i>
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Widget Configuration Modal -->
+  <div id="widget-config-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="config-title">Configure Widget</h2>
+        <button class="modal-close" id="close-config">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="widget-config-form">
+          <!-- Dynamic content will be inserted here -->
+        </form>
+        
+        <div style="margin-top: 1.5rem; text-align: center; display: flex; gap: 1rem; justify-content: center;">
+          <button type="button" class="btn btn-ghost" onclick="closeConfig()">Cancel</button>
+          <button type="submit" form="widget-config-form" class="btn btn-primary">
+            <i class="fas fa-save"></i>
+            Save Configuration
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Widget Picker Modal -->
@@ -757,7 +842,7 @@
               <i class="fas fa-cloud-sun"></i>
             </div>
             <h3>Weather</h3>
-            <p>Current weather conditions</p>
+            <p>Current weather conditions with live data support</p>
           </div>
           
           <div class="widget-option" data-type="crypto">
@@ -765,7 +850,7 @@
               <i class="fab fa-bitcoin"></i>
             </div>
             <h3>Crypto</h3>
-            <p>Cryptocurrency prices</p>
+            <p>Cryptocurrency prices (always live)</p>
           </div>
           
           <div class="widget-option" data-type="stocks">
@@ -773,7 +858,15 @@
               <i class="fas fa-chart-line"></i>
             </div>
             <h3>Stocks</h3>
-            <p>Stock market data</p>
+            <p>Stock market data with live data support</p>
+          </div>
+          
+          <div class="widget-option" data-type="sports">
+            <div class="widget-icon">
+              <i class="fas fa-football-ball"></i>
+            </div>
+            <h3>Sports</h3>
+            <p>Live sports odds and betting data</p>
           </div>
           
           <div class="widget-option" data-type="countdown">
@@ -781,7 +874,7 @@
               <i class="fas fa-hourglass-half"></i>
             </div>
             <h3>Countdown</h3>
-            <p>Count down to events</p>
+            <p>Count down to important events</p>
           </div>
           
           <div class="widget-option" data-type="notes">
@@ -797,7 +890,7 @@
               <i class="fas fa-tasks"></i>
             </div>
             <h3>Todo</h3>
-            <p>Task management</p>
+            <p>Task management and todo lists</p>
           </div>
         </div>
       </div>
@@ -811,6 +904,113 @@
   <script src="https://cdn.jsdelivr.net/npm/gridstack@9.5.1/dist/gridstack-all.js"></script>
   
   <script>
+    // API Management
+    class APIManager {
+      constructor() {
+        this.apiKeys = {
+          weather: null,
+          stocks: null,
+          sports: null
+        };
+        this.loadAPIKeys();
+      }
+
+      loadAPIKeys() {
+        try {
+          const saved = localStorage.getItem('dashboard-api-keys');
+          if (saved) {
+            this.apiKeys = { ...this.apiKeys, ...JSON.parse(saved) };
+          }
+        } catch (e) {
+          console.warn('Could not load API keys:', e);
+        }
+      }
+
+      saveAPIKeys() {
+        try {
+          localStorage.setItem('dashboard-api-keys', JSON.stringify(this.apiKeys));
+        } catch (e) {
+          console.warn('Could not save API keys:', e);
+        }
+      }
+
+      setWeatherAPI(key) {
+        this.apiKeys.weather = key;
+        this.saveAPIKeys();
+        this.updateBannerStatus();
+      }
+
+      setStocksAPI(key) {
+        this.apiKeys.stocks = key;
+        this.saveAPIKeys();
+        this.updateBannerStatus();
+      }
+
+      setSportsAPI(key) {
+        this.apiKeys.sports = key;
+        this.saveAPIKeys();
+        this.updateBannerStatus();
+      }
+
+      hasWeatherAPI() {
+        return !!(this.apiKeys.weather && this.apiKeys.weather.trim());
+      }
+
+      hasStocksAPI() {
+        return !!(this.apiKeys.stocks && this.apiKeys.stocks.trim());
+      }
+
+      hasSportsAPI() {
+        return !!(this.apiKeys.sports && this.apiKeys.sports.trim());
+      }
+
+      getWeatherAPI() {
+        return this.apiKeys.weather;
+      }
+
+      getStocksAPI() {
+        return this.apiKeys.stocks;
+      }
+
+      getSportsAPI() {
+        return this.apiKeys.sports;
+      }
+
+      updateBannerStatus() {
+        const banner = document.getElementById('api-status-banner');
+        if (banner) {
+          if (this.hasWeatherAPI() && this.hasStocksAPI() && this.hasSportsAPI()) {
+            banner.classList.add('hidden');
+          } else {
+            banner.classList.remove('hidden');
+            const missingAPIs = [];
+            if (!this.hasWeatherAPI()) missingAPIs.push('Weather');
+            if (!this.hasStocksAPI()) missingAPIs.push('Stocks');
+            if (!this.hasSportsAPI()) missingAPIs.push('Sports');
+            banner.innerHTML = `
+              <i class="fas fa-exclamation-triangle"></i>
+              <div>
+                <strong>Demo Mode Active</strong> - Set up API keys for live data: ${missingAPIs.join(', ')}
+                <button id="quick-api-setup" class="btn btn-ghost" style="margin-left: 1rem;">
+                  <i class="fas fa-key"></i>
+                  Setup Now
+                </button>
+              </div>
+            `;
+            // Re-attach event listener
+            const quickSetupBtn = document.getElementById('quick-api-setup');
+            if (quickSetupBtn) {
+              quickSetupBtn.addEventListener('click', () => {
+                if (window.dashboard) {
+                  window.dashboard.showAPISetup();
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+
     // Widget Modules
     const WidgetModules = {
       weather: {
@@ -820,10 +1020,47 @@
         
         async fetchData(config = {}) {
           const { location = 'New York', units = 'imperial' } = config;
-          const response = await fetch(`/api/weather?location=${encodeURIComponent(location)}&units=${units}`);
-          const result = await response.json();
-          if (!response.ok) throw new Error(result.error);
-          return result.data;
+          const hasAPI = window.apiManager && window.apiManager.hasWeatherAPI();
+          
+          if (hasAPI) {
+            // Use live API
+            const apiKey = window.apiManager.getWeatherAPI();
+            const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(location)}&units=${units}&appid=${apiKey}`);
+            
+            if (!response.ok) {
+              throw new Error('Weather API request failed');
+            }
+            
+            const data = await response.json();
+            return {
+              location: data.name + (data.sys?.country ? `, ${data.sys.country}` : ''),
+              temp: Math.round(data.main.temp),
+              condition: data.weather[0].main,
+              description: data.weather[0].description,
+              humidity: data.main.humidity,
+              pressure: data.main.pressure,
+              wind: Math.round(data.wind?.speed || 0),
+              units: units,
+              icon: data.weather[0].icon,
+              isLive: true
+            };
+          } else {
+            // Fallback to demo data
+            const conditions = ['Clear', 'Clouds', 'Rain', 'Snow', 'Mist'];
+            const condition = conditions[Math.floor(Math.random() * conditions.length)];
+            
+            return {
+              location: location,
+              temp: Math.floor(Math.random() * 35) + 45,
+              condition: condition,
+              description: condition.toLowerCase(),
+              humidity: Math.floor(Math.random() * 40) + 30,
+              pressure: Math.floor(Math.random() * 50) + 1000,
+              wind: Math.floor(Math.random() * 20) + 2,
+              units: units,
+              isLive: false
+            };
+          }
         },
         
         render(container, data) {
@@ -831,10 +1068,10 @@
           
           container.innerHTML = `
             <div class="widget-data">
+              ${data.isLive ? '<div class="live-indicator"></div>' : '<div class="demo-indicator">DEMO</div>'}
               <div class="widget-main">${data.temp}${tempUnit}</div>
               <div class="widget-sub">${data.condition}</div>
               <div class="widget-location">${data.location}</div>
-              ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
               <div class="widget-details">
                 <div class="detail-item">
                   <span class="detail-label">Humidity</span>
@@ -847,6 +1084,22 @@
               </div>
             </div>
           `;
+        },
+
+        getConfigForm() {
+          return `
+            <div class="form-group">
+              <label class="form-label" for="weather-location">Location</label>
+              <input type="text" id="weather-location" name="location" class="form-input" placeholder="e.g., New York, London" value="New York">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="weather-units">Temperature Unit</label>
+              <select id="weather-units" name="units" class="form-select">
+                <option value="imperial">Fahrenheit (°F)</option>
+                <option value="metric">Celsius (°C)</option>
+              </select>
+            </div>
+          `;
         }
       },
 
@@ -857,19 +1110,38 @@
         
         async fetchData(config = {}) {
           const { coin = 'bitcoin', currency = 'usd' } = config;
-          const response = await fetch(`/api/crypto?coin=${coin}&currency=${currency}`);
-          const result = await response.json();
-          if (!response.ok) throw new Error(result.error);
-          return result.data;
+          const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=${currency}&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true`);
+          
+          if (!response.ok) {
+            throw new Error('Crypto API request failed');
+          }
+          
+          const data = await response.json();
+          const coinData = data[coin];
+          
+          if (!coinData) {
+            throw new Error('Cryptocurrency not found');
+          }
+          
+          return {
+            coin: coin,
+            price: coinData[currency],
+            change24h: coinData[`${currency}_24h_change`]?.toFixed(2) || '0.00',
+            marketCap: coinData[`${currency}_market_cap`],
+            volume24h: coinData[`${currency}_24h_vol`],
+            currency: currency,
+            isLive: true
+          };
         },
         
         render(container, data) {
           const changeClass = parseFloat(data.change24h) >= 0 ? 'positive' : 'negative';
           const changeIcon = parseFloat(data.change24h) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-          const symbol = data.currency === 'usd' ? '$' : data.currency.toUpperCase();
+          const symbol = data.currency === 'usd' ? ' : data.currency.toUpperCase();
           
           container.innerHTML = `
             <div class="widget-data">
+              <div class="live-indicator"></div>
               <div class="widget-main">${symbol}${parseFloat(data.price).toLocaleString()}</div>
               <div class="widget-sub">
                 <i class="fas ${changeIcon}"></i>
@@ -886,6 +1158,34 @@
                   <span class="detail-value">${this.formatNumber(data.volume24h)}</span>
                 </div>
               </div>
+            </div>
+          `;
+        },
+
+        getConfigForm() {
+          return `
+            <div class="form-group">
+              <label class="form-label" for="crypto-coin">Cryptocurrency</label>
+              <select id="crypto-coin" name="coin" class="form-select">
+                <option value="bitcoin">Bitcoin (BTC)</option>
+                <option value="ethereum">Ethereum (ETH)</option>
+                <option value="cardano">Cardano (ADA)</option>
+                <option value="solana">Solana (SOL)</option>
+                <option value="polkadot">Polkadot (DOT)</option>
+                <option value="chainlink">Chainlink (LINK)</option>
+                <option value="litecoin">Litecoin (LTC)</option>
+                <option value="dogecoin">Dogecoin (DOGE)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="crypto-currency">Currency</label>
+              <select id="crypto-currency" name="currency" class="form-select">
+                <option value="usd">US Dollar (USD)</option>
+                <option value="eur">Euro (EUR)</option>
+                <option value="gbp">British Pound (GBP)</option>
+                <option value="btc">Bitcoin (BTC)</option>
+                <option value="eth">Ethereum (ETH)</option>
+              </select>
             </div>
           `;
         },
@@ -907,10 +1207,68 @@
         
         async fetchData(config = {}) {
           const { symbol = 'AAPL' } = config;
-          const response = await fetch(`/api/stocks?symbol=${symbol.toUpperCase()}`);
-          const result = await response.json();
-          if (!response.ok) throw new Error(result.error);
-          return result.data;
+          const hasAPI = window.apiManager && window.apiManager.hasStocksAPI();
+          
+          if (hasAPI) {
+            // Use live API
+            const apiKey = window.apiManager.getStocksAPI();
+            const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol.toUpperCase()}&apikey=${apiKey}`);
+            
+            if (!response.ok) {
+              throw new Error('Stocks API request failed');
+            }
+            
+            const data = await response.json();
+            
+            if (data['Error Message']) {
+              throw new Error('Invalid stock symbol');
+            }
+            
+            if (data['Note']) {
+              throw new Error('API call frequency limit reached');
+            }
+            
+            const quote = data['Global Quote'];
+            if (!quote || Object.keys(quote).length === 0) {
+              throw new Error('Stock data not available');
+            }
+            
+            const price = parseFloat(quote['05. price']);
+            const change = parseFloat(quote['09. change']);
+            const changePercent = quote['10. change percent'].replace('%', '');
+            
+            return {
+              symbol: quote['01. symbol'],
+              price: price.toFixed(2),
+              change: change.toFixed(2),
+              changePercent: changePercent + '%',
+              volume: parseInt(quote['06. volume']) || 0,
+              previousClose: parseFloat(quote['08. previous close']).toFixed(2),
+              high: parseFloat(quote['03. high']).toFixed(2),
+              low: parseFloat(quote['04. low']).toFixed(2),
+              lastUpdated: quote['07. latest trading day'],
+              isLive: true
+            };
+          } else {
+            // Fallback to demo data
+            const basePrice = 150 + Math.random() * 200;
+            const changePercent = (Math.random() - 0.5) * 8;
+            const change = (basePrice * changePercent / 100);
+            const previousClose = basePrice - change;
+            
+            return {
+              symbol: symbol.toUpperCase(),
+              price: basePrice.toFixed(2),
+              change: change.toFixed(2),
+              changePercent: `${changePercent.toFixed(2)}%`,
+              volume: Math.floor(Math.random() * 50000000) + 1000000,
+              previousClose: previousClose.toFixed(2),
+              high: (basePrice + Math.random() * 10).toFixed(2),
+              low: (basePrice - Math.random() * 10).toFixed(2),
+              lastUpdated: new Date().toISOString().split('T')[0],
+              isLive: false
+            };
+          }
         },
         
         render(container, data) {
@@ -919,13 +1277,13 @@
           
           container.innerHTML = `
             <div class="widget-data">
+              ${data.isLive ? '<div class="live-indicator"></div>' : '<div class="demo-indicator">DEMO</div>'}
               <div class="widget-main">${parseFloat(data.price).toFixed(2)}</div>
               <div class="widget-sub">
                 <i class="fas ${changeIcon}"></i>
                 <span class="${changeClass}">${data.change} (${data.changePercent})</span>
               </div>
               <div class="widget-location">${data.symbol}</div>
-              ${data.demo ? '<div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">Demo Data</div>' : ''}
               <div class="widget-details">
                 <div class="detail-item">
                   <span class="detail-label">Volume</span>
@@ -939,12 +1297,172 @@
             </div>
           `;
         },
+
+        getConfigForm() {
+          return `
+            <div class="form-group">
+              <label class="form-label" for="stock-symbol">Stock Symbol</label>
+              <input type="text" id="stock-symbol" name="symbol" class="form-input" placeholder="e.g., AAPL, GOOGL, TSLA" value="AAPL" style="text-transform: uppercase;">
+            </div>
+            <div style="background: var(--primary-light); padding: 1rem; border-radius: var(--radius); margin-top: 1rem;">
+              <p style="font-size: 0.875rem; color: var(--text-muted); margin: 0;">
+                <strong>Popular symbols:</strong> AAPL (Apple), GOOGL (Google), MSFT (Microsoft), TSLA (Tesla), AMZN (Amazon)
+              </p>
+            </div>
+          `;
+        },
         
         formatVolume(volume) {
           if (!volume) return 'N/A';
           if (volume >= 1e6) return (volume / 1e6).toFixed(1) + 'M';
           if (volume >= 1e3) return (volume / 1e3).toFixed(1) + 'K';
           return volume.toString();
+        }
+      },
+
+      sports: {
+        name: 'Sports',
+        icon: 'fas fa-football-ball',
+        defaultSize: { w: 5, h: 3 },
+        
+        async fetchData(config = {}) {
+          const { sport = 'americanfootball_nfl', region = 'us', market = 'h2h' } = config;
+          const hasAPI = window.apiManager && window.apiManager.hasSportsAPI();
+          
+          if (hasAPI) {
+            // Use live API
+            const apiKey = window.apiManager.getSportsAPI();
+            const response = await fetch(`https://api.the-odds-api.com/v4/sports/${sport}/odds/?apiKey=${apiKey}&regions=${region}&markets=${market}&dateFormat=iso&oddsFormat=decimal`);
+            
+            if (!response.ok) {
+              throw new Error('Sports API request failed');
+            }
+            
+            const data = await response.json();
+            
+            if (data.length === 0) {
+              throw new Error('No upcoming games found');
+            }
+            
+            // Get the next upcoming game
+            const nextGame = data[0];
+            const homeTeam = nextGame.home_team;
+            const awayTeam = nextGame.away_team;
+            const gameTime = new Date(nextGame.commence_time);
+            
+            // Get odds from the first bookmaker
+            const bookmaker = nextGame.bookmakers?.[0];
+            const odds = bookmaker ? bookmaker.markets?.[0]?.outcomes : null;
+            
+            return {
+              sport: sport,
+              homeTeam: homeTeam,
+              awayTeam: awayTeam,
+              gameTime: gameTime.toLocaleString(),
+              bookmaker: bookmaker?.title || 'N/A',
+              homeOdds: odds?.find(o => o.name === homeTeam)?.price || 'N/A',
+              awayOdds: odds?.find(o => o.name === awayTeam)?.price || 'N/A',
+              drawOdds: odds?.find(o => o.name === 'Draw')?.price || null,
+              isLive: true
+            };
+          } else {
+            // Fallback to demo data
+            const teams = {
+              americanfootball_nfl: ['Chiefs', 'Patriots', 'Cowboys', 'Packers'],
+              basketball_nba: ['Lakers', 'Warriors', 'Celtics', 'Heat'],
+              baseball_mlb: ['Yankees', 'Dodgers', 'Red Sox', 'Giants'],
+              icehockey_nhl: ['Rangers', 'Bruins', 'Kings', 'Blackhawks']
+            };
+            
+            const sportTeams = teams[sport] || teams.americanfootball_nfl;
+            const homeTeam = sportTeams[Math.floor(Math.random() * sportTeams.length)];
+            let awayTeam = sportTeams[Math.floor(Math.random() * sportTeams.length)];
+            while (awayTeam === homeTeam) {
+              awayTeam = sportTeams[Math.floor(Math.random() * sportTeams.length)];
+            }
+            
+            const gameTime = new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000);
+            
+            return {
+              sport: sport,
+              homeTeam: homeTeam,
+              awayTeam: awayTeam,
+              gameTime: gameTime.toLocaleString(),
+              bookmaker: 'Demo Sportsbook',
+              homeOdds: (1.5 + Math.random() * 2).toFixed(2),
+              awayOdds: (1.5 + Math.random() * 2).toFixed(2),
+              drawOdds: sport.includes('soccer') ? (2.5 + Math.random() * 2).toFixed(2) : null,
+              isLive: false
+            };
+          }
+        },
+        
+        render(container, data) {
+          const drawOddsDisplay = data.drawOdds ? `
+            <div class="detail-item">
+              <span class="detail-label">Draw</span>
+              <span class="detail-value">${data.drawOdds}</span>
+            </div>
+          ` : '';
+          
+          container.innerHTML = `
+            <div class="widget-data">
+              ${data.isLive ? '<div class="live-indicator"></div>' : '<div class="demo-indicator">DEMO</div>'}
+              <div class="widget-main" style="font-size: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <span style="text-align: right; flex: 1;">${data.awayTeam}</span>
+                <span style="font-size: 0.875rem; opacity: 0.8;">@</span>
+                <span style="text-align: left; flex: 1;">${data.homeTeam}</span>
+              </div>
+              <div class="widget-sub" style="font-size: 0.75rem; opacity: 0.8;">${data.gameTime}</div>
+              <div class="widget-location">${data.bookmaker}</div>
+              <div class="widget-details" ${data.drawOdds ? 'style="grid-template-columns: repeat(3, 1fr);"' : ''}>
+                <div class="detail-item">
+                  <span class="detail-label">${data.awayTeam}</span>
+                  <span class="detail-value">${data.awayOdds}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">${data.homeTeam}</span>
+                  <span class="detail-value">${data.homeOdds}</span>
+                </div>
+                ${drawOddsDisplay}
+              </div>
+            </div>
+          `;
+        },
+
+        getConfigForm() {
+          return `
+            <div class="form-group">
+              <label class="form-label" for="sports-sport">Sport</label>
+              <select id="sports-sport" name="sport" class="form-select">
+                <option value="americanfootball_nfl">NFL (American Football)</option>
+                <option value="basketball_nba">NBA (Basketball)</option>
+                <option value="baseball_mlb">MLB (Baseball)</option>
+                <option value="icehockey_nhl">NHL (Ice Hockey)</option>
+                <option value="soccer_epl">Premier League (Soccer)</option>
+                <option value="soccer_uefa_champs_league">Champions League (Soccer)</option>
+                <option value="tennis_atp_french_open">French Open (Tennis)</option>
+                <option value="mma_mixed_martial_arts">MMA</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sports-region">Region</label>
+              <select id="sports-region" name="region" class="form-select">
+                <option value="us">United States</option>
+                <option value="uk">United Kingdom</option>
+                <option value="au">Australia</option>
+                <option value="eu">Europe</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="sports-market">Market Type</label>
+              <select id="sports-market" name="market" class="form-select">
+                <option value="h2h">Head to Head (Moneyline)</option>
+                <option value="spreads">Point Spreads</option>
+                <option value="totals">Over/Under Totals</option>
+              </select>
+            </div>
+          `;
         }
       },
 
@@ -955,10 +1473,22 @@
         
         async fetchData(config = {}) {
           const { title = 'New Year', targetDate = '2025-12-31T23:59:59' } = config;
-          const response = await fetch(`/api/countdown?title=${encodeURIComponent(title)}&targetDate=${encodeURIComponent(targetDate)}`);
-          const result = await response.json();
-          if (!response.ok) throw new Error(result.error);
-          return result.data;
+          const target = new Date(targetDate);
+          const now = new Date();
+          
+          if (isNaN(target.getTime())) {
+            throw new Error('Invalid date format');
+          }
+          
+          const diff = target - now;
+          
+          return {
+            title: title,
+            targetDate: targetDate,
+            completed: diff <= 0,
+            timeRemaining: Math.max(0, diff),
+            daysRemaining: Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)))
+          };
         },
         
         render(container, data) {
@@ -1008,6 +1538,19 @@
               this.render(container, data);
             }
           }, 1000);
+        },
+
+        getConfigForm() {
+          return `
+            <div class="form-group">
+              <label class="form-label" for="countdown-title">Event Title</label>
+              <input type="text" id="countdown-title" name="title" class="form-input" placeholder="e.g., New Year, Birthday" value="New Year">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="countdown-date">Target Date</label>
+              <input type="datetime-local" id="countdown-date" name="targetDate" class="form-input">
+            </div>
+          `;
         }
       },
 
@@ -1021,14 +1564,21 @@
         },
         
         render(container, data) {
-          const isDemo = window.dashboard && window.dashboard.demoMode;
           container.innerHTML = `
             <div style="height: 100%; display: flex; flex-direction: column;">
               <textarea 
                 style="flex: 1; width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; font-family: inherit; font-size: 0.875rem; background: var(--background); color: var(--text); resize: none;"
                 placeholder="Enter your notes here..."
-                ${isDemo ? 'readonly' : ''}
-              >${isDemo ? 'This is a demo notes widget.\nLogin to start taking notes!' : ''}</textarea>
+              ></textarea>
+            </div>
+          `;
+        },
+
+        getConfigForm() {
+          return `
+            <div class="form-group">
+              <label class="form-label" for="notes-title">Note Title</label>
+              <input type="text" id="notes-title" name="title" class="form-input" placeholder="e.g., Meeting Notes" value="Notes">
             </div>
           `;
         }
@@ -1044,258 +1594,30 @@
         },
         
         render(container, data) {
-          const isDemo = window.dashboard && window.dashboard.demoMode;
           container.innerHTML = `
             <div style="height: 100%; display: flex; flex-direction: column; gap: 1rem;">
               <input 
                 type="text" 
-                placeholder="${isDemo ? 'Login to add tasks' : 'Add new task...'}"
+                placeholder="Add new task..."
                 style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--background); color: var(--text);"
-                ${isDemo ? 'readonly' : ''}
               >
               <div style="flex: 1; overflow-y: auto;">
-                ${isDemo ? `
-                  <div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
-                    <i class="fas fa-tasks" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
-                    Demo Todo Widget<br>
-                    Login to manage your tasks!
-                  </div>
-                ` : '<div style="color: var(--text-muted); text-align: center; padding: 1rem;">No tasks yet</div>'}
+                <div style="color: var(--text-muted); text-align: center; padding: 1rem;">No tasks yet</div>
               </div>
+            </div>
+          `;
+        },
+
+        getConfigForm() {
+          return `
+            <div class="form-group">
+              <label class="form-label" for="todo-title">List Title</label>
+              <input type="text" id="todo-title" name="title" class="form-input" placeholder="e.g., Work Tasks" value="Todo List">
             </div>
           `;
         }
       }
     };
-
-    window.WidgetModules = WidgetModules;
-
-    // Authentication Manager
-    class AuthManager {
-      constructor() {
-        this.isAuthenticated = false;
-        this.currentUser = null;
-        this.currentAuthMode = 'login';
-        this.init();
-      }
-      
-      init() {
-        try {
-          const saved = localStorage.getItem('dashboard-auth');
-          if (saved) {
-            const authData = JSON.parse(saved);
-            if (authData.isAuthenticated) {
-              this.isAuthenticated = true;
-              this.currentUser = authData.user;
-              this.updateUI();
-            }
-          }
-        } catch (e) {
-          console.warn('Could not load auth state:', e);
-        }
-        
-        this.setupEventListeners();
-      }
-      
-      setupEventListeners() {
-        document.getElementById('login-btn')?.addEventListener('click', () => this.showAuthModal('login'));
-        document.getElementById('register-btn')?.addEventListener('click', () => this.showAuthModal('register'));
-        document.getElementById('demo-login')?.addEventListener('click', () => this.showAuthModal('login'));
-        document.getElementById('demo-register')?.addEventListener('click', () => this.showAuthModal('register'));
-        document.getElementById('close-auth')?.addEventListener('click', () => this.hideAuthModal());
-        document.getElementById('logout')?.addEventListener('click', () => this.logout());
-        document.getElementById('auth-form')?.addEventListener('submit', (e) => this.handleAuthSubmit(e));
-        
-        document.getElementById('auth-modal')?.addEventListener('click', (e) => {
-          if (e.target.id === 'auth-modal') {
-            this.hideAuthModal();
-          }
-        });
-        
-        this.setupAuthSwitch();
-      }
-      
-      setupAuthSwitch() {
-        const authSwitch = document.getElementById('auth-switch');
-        if (authSwitch) {
-          authSwitch.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.toggleAuthMode();
-          });
-        }
-      }
-      
-      showAuthModal(mode = 'login') {
-        this.currentAuthMode = mode;
-        this.updateAuthModal();
-        const modal = document.getElementById('auth-modal');
-        if (modal) {
-          modal.style.display = 'flex';
-        }
-      }
-      
-      hideAuthModal() {
-        const modal = document.getElementById('auth-modal');
-        if (modal) {
-          modal.style.display = 'none';
-        }
-        const form = document.getElementById('auth-form');
-        if (form) {
-          form.reset();
-        }
-      }
-      
-      updateAuthModal() {
-        const isLogin = this.currentAuthMode === 'login';
-        
-        const title = document.getElementById('auth-title');
-        const submit = document.getElementById('auth-submit');
-        const switchText = document.getElementById('auth-switch-text');
-        const confirmGroup = document.getElementById('confirm-password-group');
-        
-        if (title) {
-          title.textContent = isLogin ? 'Sign In' : 'Sign Up';
-        }
-        
-        if (submit) {
-          submit.innerHTML = isLogin ? 
-            '<i class="fas fa-sign-in-alt"></i><span>Sign In</span>' : 
-            '<i class="fas fa-user-plus"></i><span>Create Account</span>';
-        }
-        
-        if (switchText) {
-          switchText.innerHTML = isLogin ? 
-            'Don\'t have an account? <a href="#" id="auth-switch" style="color: var(--primary); text-decoration: none; font-weight: 500;">Sign up</a>' : 
-            'Already have an account? <a href="#" id="auth-switch" style="color: var(--primary); text-decoration: none; font-weight: 500;">Sign in</a>';
-        }
-        
-        if (confirmGroup) {
-          if (isLogin) {
-            confirmGroup.classList.add('hidden');
-          } else {
-            confirmGroup.classList.remove('hidden');
-          }
-        }
-        
-        this.setupAuthSwitch();
-      }
-      
-      toggleAuthMode() {
-        this.currentAuthMode = this.currentAuthMode === 'login' ? 'register' : 'login';
-        this.updateAuthModal();
-      }
-      
-      async handleAuthSubmit(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(e.target);
-        const email = formData.get('email');
-        const password = formData.get('password');
-        const confirmPassword = formData.get('confirm-password');
-        
-        if (!email || !password) {
-          this.showToast('Please fill in all fields', 'error');
-          return;
-        }
-        
-        if (this.currentAuthMode === 'register' && password !== confirmPassword) {
-          this.showToast('Passwords do not match', 'error');
-          return;
-        }
-        
-        try {
-          const user = {
-            email: email,
-            name: email.split('@')[0],
-            id: Date.now()
-          };
-          
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          this.isAuthenticated = true;
-          this.currentUser = user;
-          
-          try {
-            localStorage.setItem('dashboard-auth', JSON.stringify({
-              isAuthenticated: true,
-              user: user
-            }));
-          } catch (e) {
-            console.warn('Could not save auth state:', e);
-          }
-          
-          this.hideAuthModal();
-          this.updateUI();
-          this.showToast(`Welcome ${user.name}!`, 'success');
-          
-          if (window.dashboard) {
-            window.dashboard.enableAuthenticatedMode();
-          }
-          
-        } catch (error) {
-          this.showToast('Authentication failed. Please try again.', 'error');
-        }
-      }
-      
-      logout() {
-        this.isAuthenticated = false;
-        this.currentUser = null;
-        
-        try {
-          localStorage.removeItem('dashboard-auth');
-        } catch (e) {
-          console.warn('Could not clear auth state:', e);
-        }
-        
-        this.updateUI();
-        this.showToast('Logged out successfully', 'info');
-        
-        if (window.dashboard) {
-          window.dashboard.disableAuthenticatedMode();
-        }
-      }
-      
-      updateUI() {
-        const welcomeBanner = document.getElementById('welcome-banner');
-        const authenticatedControls = document.getElementById('authenticated-controls');
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        
-        if (this.isAuthenticated) {
-          if (welcomeBanner) welcomeBanner.style.display = 'none';
-          if (authenticatedControls) authenticatedControls.classList.remove('hidden');
-          if (loginBtn) loginBtn.style.display = 'none';
-          if (registerBtn) registerBtn.style.display = 'none';
-        } else {
-          if (welcomeBanner) welcomeBanner.style.display = 'block';
-          if (authenticatedControls) authenticatedControls.classList.add('hidden');
-          if (loginBtn) loginBtn.style.display = 'flex';
-          if (registerBtn) registerBtn.style.display = 'flex';
-        }
-      }
-      
-      showToast(message, type = 'info') {
-        const toastContainer = document.getElementById('toast-container');
-        if (!toastContainer) return;
-        
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        toast.textContent = message;
-        
-        toastContainer.appendChild(toast);
-        
-        setTimeout(() => {
-          if (toast.parentNode) {
-            toast.style.opacity = '0';
-            setTimeout(() => {
-              if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
-              }
-            }, 300);
-          }
-        }, 3000);
-      }
-    }
 
     // Dashboard Class
     class Dashboard {
@@ -1304,7 +1626,7 @@
         this.widgets = new Map();
         this.theme = 'light';
         this.widgetCounter = 0;
-        this.demoMode = true;
+        this.currentConfigWidget = null;
         
         try {
           this.theme = localStorage.getItem('dashboard-theme') || 'light';
@@ -1319,10 +1641,7 @@
         this.initializeTheme();
         this.initializeGrid();
         this.setupEventListeners();
-        
-        setTimeout(() => {
-          this.loadDemoWidgets();
-        }, 100);
+        this.loadDemoWidgets();
       }
       
       initializeTheme() {
@@ -1344,87 +1663,84 @@
           },
           draggable: {
             handle: '.widget-header'
-          },
-          disableDrag: this.demoMode,
-          disableResize: this.demoMode
+          }
         });
         
         this.grid.on('change', () => {
-          if (!this.demoMode) {
-            this.saveLayout();
-          }
+          this.saveLayout();
         });
       }
       
       setupEventListeners() {
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle) {
-          themeToggle.addEventListener('click', () => {
-            this.toggleTheme();
-          });
-        }
+        // Theme toggle
+        document.getElementById('theme-toggle')?.addEventListener('click', () => {
+          this.toggleTheme();
+        });
         
-        const addWidget = document.getElementById('add-widget');
-        if (addWidget) {
-          addWidget.addEventListener('click', () => {
-            if (this.demoMode) {
-              window.authManager.showAuthModal('login');
-              window.authManager.showToast('Please login to add widgets', 'info');
-            } else {
-              this.showWidgetPicker();
-            }
-          });
-        }
+        // API setup
+        document.getElementById('api-setup')?.addEventListener('click', () => {
+          this.showAPISetup();
+        });
         
-        const resetLayout = document.getElementById('reset-layout');
-        if (resetLayout) {
-          resetLayout.addEventListener('click', () => {
-            if (this.demoMode) {
-              this.loadDemoWidgets();
-              this.showToast('Demo layout reset', 'info');
-            } else if (confirm('Reset layout? This will remove all widgets.')) {
-              this.resetLayout();
-            }
-          });
-        }
+        document.getElementById('quick-api-setup')?.addEventListener('click', () => {
+          this.showAPISetup();
+        });
         
-        const closePicker = document.getElementById('close-picker');
-        if (closePicker) {
-          closePicker.addEventListener('click', () => {
-            this.hideWidgetPicker();
-          });
-        }
+        // Widget management
+        document.getElementById('add-widget')?.addEventListener('click', () => {
+          this.showWidgetPicker();
+        });
         
-        const widgetPicker = document.getElementById('widget-picker');
-        if (widgetPicker) {
-          widgetPicker.addEventListener('click', (e) => {
-            if (e.target.id === 'widget-picker') {
-              this.hideWidgetPicker();
-            }
-          });
-        }
+        document.getElementById('reset-layout')?.addEventListener('click', () => {
+          if (confirm('Reset layout? This will remove all widgets.')) {
+            this.resetLayout();
+          }
+        });
         
+        // Modal controls
+        document.getElementById('close-api-setup')?.addEventListener('click', () => {
+          this.hideAPISetup();
+        });
+        
+        document.getElementById('close-picker')?.addEventListener('click', () => {
+          this.hideWidgetPicker();
+        });
+        
+        document.getElementById('close-config')?.addEventListener('click', () => {
+          this.hideConfig();
+        });
+        
+        // Widget picker options
         document.querySelectorAll('.widget-option').forEach(option => {
           option.addEventListener('click', () => {
             const type = option.dataset.type;
-            this.addWidget(type);
-            this.hideWidgetPicker();
+            this.showWidgetConfig(type);
           });
         });
-      }
-      
-      enableAuthenticatedMode() {
-        this.demoMode = false;
-        this.grid.enableMove(true);
-        this.grid.enableResize(true);
-        this.loadLayout();
-      }
-      
-      disableAuthenticatedMode() {
-        this.demoMode = true;
-        this.grid.enableMove(false);
-        this.grid.enableResize(false);
-        this.loadDemoWidgets();
+        
+        // Widget config form
+        document.getElementById('widget-config-form')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          this.handleConfigSubmit(e);
+        });
+        
+        // Modal backdrop clicks
+        document.addEventListener('click', (e) => {
+          if (e.target.classList.contains('modal')) {
+            if (e.target.id === 'api-setup-modal') this.hideAPISetup();
+            if (e.target.id === 'widget-picker') this.hideWidgetPicker();
+            if (e.target.id === 'widget-config-modal') this.hideConfig();
+          }
+        });
+        
+        // ESC key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            this.hideAPISetup();
+            this.hideWidgetPicker();
+            this.hideConfig();
+          }
+        });
       }
       
       toggleTheme() {
@@ -1445,6 +1761,97 @@
         this.showToast(`Switched to ${this.theme} theme`, 'info');
       }
       
+      showAPISetup() {
+        const modal = document.getElementById('api-setup-modal');
+        if (modal) {
+          modal.style.display = 'flex';
+          
+          // Load current values
+          if (window.apiManager) {
+            const weatherKey = document.getElementById('weather-api-key');
+            const stocksKey = document.getElementById('stocks-api-key');
+            const sportsKey = document.getElementById('sports-api-key');
+            
+            if (weatherKey && window.apiManager.hasWeatherAPI()) {
+              weatherKey.value = window.apiManager.getWeatherAPI();
+            }
+            if (stocksKey && window.apiManager.hasStocksAPI()) {
+              stocksKey.value = window.apiManager.getStocksAPI();
+            }
+            if (sportsKey && window.apiManager.hasSportsAPI()) {
+              sportsKey.value = window.apiManager.getSportsAPI();
+            }
+          }
+        }
+      }
+      
+      hideAPISetup() {
+        const modal = document.getElementById('api-setup-modal');
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+      
+      showWidgetPicker() {
+        const modal = document.getElementById('widget-picker');
+        if (modal) {
+          modal.style.display = 'flex';
+        }
+      }
+      
+      hideWidgetPicker() {
+        const modal = document.getElementById('widget-picker');
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+      
+      showWidgetConfig(type) {
+        this.currentConfigWidget = type;
+        const module = this.getWidgetModule(type);
+        if (!module) return;
+        
+        const modal = document.getElementById('widget-config-modal');
+        const title = document.getElementById('config-title');
+        const form = document.getElementById('widget-config-form');
+        
+        if (title) {
+          title.textContent = `Configure ${module.name} Widget`;
+        }
+        
+        if (form && module.getConfigForm) {
+          form.innerHTML = module.getConfigForm();
+        }
+        
+        this.hideWidgetPicker();
+        
+        if (modal) {
+          modal.style.display = 'flex';
+        }
+      }
+      
+      hideConfig() {
+        const modal = document.getElementById('widget-config-modal');
+        if (modal) {
+          modal.style.display = 'none';
+        }
+        this.currentConfigWidget = null;
+      }
+      
+      handleConfigSubmit(e) {
+        if (!this.currentConfigWidget) return;
+        
+        const formData = new FormData(e.target);
+        const config = {};
+        
+        for (const [key, value] of formData.entries()) {
+          config[key] = value;
+        }
+        
+        this.addWidget(this.currentConfigWidget, config);
+        this.hideConfig();
+      }
+      
       async loadDemoWidgets() {
         this.widgets.forEach((widget) => {
           this.grid.removeWidget(widget.element);
@@ -1455,26 +1862,13 @@
           await this.addWidget('weather', { location: 'New York', units: 'imperial' }, { x: 0, y: 0, w: 4, h: 3 });
           await this.addWidget('crypto', { coin: 'bitcoin', currency: 'usd' }, { x: 4, y: 0, w: 4, h: 3 });
           await this.addWidget('stocks', { symbol: 'AAPL' }, { x: 8, y: 0, w: 4, h: 3 });
+          await this.addWidget('sports', { sport: 'americanfootball_nfl' }, { x: 0, y: 3, w: 5, h: 3 });
           await this.addWidget('countdown', { 
             title: 'New Year 2026', 
             targetDate: '2026-01-01T00:00:00' 
-          }, { x: 0, y: 3, w: 6, h: 3 });
+          }, { x: 5, y: 3, w: 6, h: 3 });
         } catch (error) {
           console.error('Error loading demo widgets:', error);
-        }
-      }
-      
-      showWidgetPicker() {
-        const picker = document.getElementById('widget-picker');
-        if (picker) {
-          picker.style.display = 'flex';
-        }
-      }
-      
-      hideWidgetPicker() {
-        const picker = document.getElementById('widget-picker');
-        if (picker) {
-          picker.style.display = 'none';
         }
       }
       
@@ -1502,7 +1896,12 @@
               <button class="widget-action refresh-widget" title="Refresh">
                 <i class="fas fa-sync-alt"></i>
               </button>
-              ${!this.demoMode ? '<button class="widget-action remove-widget" title="Remove"><i class="fas fa-times"></i></button>' : ''}
+              <button class="widget-action config-widget" title="Configure">
+                <i class="fas fa-cog"></i>
+              </button>
+              <button class="widget-action remove-widget" title="Remove">
+                <i class="fas fa-times"></i>
+              </button>
             </div>
           </div>
           <div class="widget-content">
@@ -1532,10 +1931,7 @@
         });
         
         await this.loadWidgetData(widgetId);
-        
-        if (!this.demoMode) {
-          this.showToast(`Added ${module.name} widget`, 'success');
-        }
+        this.showToast(`Added ${module.name} widget`, 'success');
       }
       
       setupWidgetActions(widgetEl) {
@@ -1546,6 +1942,29 @@
           refreshBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.loadWidgetData(widgetId);
+          });
+        }
+        
+        const configBtn = widgetEl.querySelector('.config-widget');
+        if (configBtn) {
+          configBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const widget = this.widgets.get(widgetId);
+            if (widget) {
+              this.showWidgetConfig(widget.type);
+              // Pre-fill form with current config
+              setTimeout(() => {
+                const form = document.getElementById('widget-config-form');
+                if (form) {
+                  Object.entries(widget.config).forEach(([key, value]) => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) {
+                      input.value = value;
+                    }
+                  });
+                }
+              }, 100);
+            }
           });
         }
         
@@ -1587,7 +2006,7 @@
               </button>
             </div>
           `;
-          this.showToast(`Failed to load ${module.name}`, 'error');
+          this.showToast(`Failed to load ${module.name}: ${error.message}`, 'error');
         }
       }
       
@@ -1604,12 +2023,10 @@
       }
       
       getWidgetModule(type) {
-        return window.WidgetModules ? window.WidgetModules[type] : null;
+        return WidgetModules[type] || null;
       }
       
       saveLayout() {
-        if (this.demoMode) return;
-        
         const layout = [];
         
         this.widgets.forEach((widget, widgetId) => {
@@ -1635,8 +2052,6 @@
       }
       
       loadLayout() {
-        if (this.demoMode) return;
-        
         try {
           const saved = localStorage.getItem('dashboard-layout');
           if (!saved) return;
@@ -1677,6 +2092,7 @@
         }
         
         this.widgetCounter = 0;
+        this.loadDemoWidgets();
         this.showToast('Layout reset', 'info');
       }
       
@@ -1704,15 +2120,46 @@
       
       startAutoRefresh() {
         setInterval(() => {
-          if (!this.demoMode) {
-            this.widgets.forEach((widget, widgetId) => {
-              if (!['notes', 'todo'].includes(widget.type)) {
-                this.loadWidgetData(widgetId);
-              }
-            });
-          }
-        }, 5 * 60 * 1000);
+          this.widgets.forEach((widget, widgetId) => {
+            if (!['notes', 'todo'].includes(widget.type)) {
+              this.loadWidgetData(widgetId);
+            }
+          });
+        }, 5 * 60 * 1000); // 5 minutes
       }
+    }
+
+    // Global API functions
+    function saveWeatherAPI() {
+      const input = document.getElementById('weather-api-key');
+      if (input && input.value.trim()) {
+        window.apiManager.setWeatherAPI(input.value.trim());
+        window.dashboard.showToast('Weather API key saved!', 'success');
+      }
+    }
+
+    function saveStocksAPI() {
+      const input = document.getElementById('stocks-api-key');
+      if (input && input.value.trim()) {
+        window.apiManager.setStocksAPI(input.value.trim());
+        window.dashboard.showToast('Stocks API key saved!', 'success');
+      }
+    }
+
+    function saveSportsAPI() {
+      const input = document.getElementById('sports-api-key');
+      if (input && input.value.trim()) {
+        window.apiManager.setSportsAPI(input.value.trim());
+        window.dashboard.showToast('Sports API key saved!', 'success');
+      }
+    }
+
+    function closeAPISetup() {
+      window.dashboard.hideAPISetup();
+    }
+
+    function closeConfig() {
+      window.dashboard.hideConfig();
     }
 
     // Initialize Application
@@ -1723,11 +2170,14 @@
       }
       
       try {
-        window.authManager = new AuthManager();
+        window.apiManager = new APIManager();
         window.dashboard = new Dashboard();
         window.dashboard.startAutoRefresh();
         
-        console.log('🚀 Enhanced Dashboard initialized successfully');
+        // Initial API status update
+        window.apiManager.updateBannerStatus();
+        
+        console.log('🚀 Enhanced Dashboard with Live Data & Customization initialized successfully');
       } catch (error) {
         console.error('Error initializing dashboard:', error);
       }
@@ -1738,21 +2188,6 @@
       console.error('Global error:', e.error);
       if (window.dashboard) {
         window.dashboard.showToast('An error occurred', 'error');
-      }
-    });
-
-    // ESC key handler
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const authModal = document.getElementById('auth-modal');
-        if (authModal && authModal.style.display === 'flex') {
-          window.authManager && window.authManager.hideAuthModal();
-        }
-        
-        const widgetPicker = document.getElementById('widget-picker');
-        if (widgetPicker && widgetPicker.style.display === 'flex') {
-          window.dashboard && window.dashboard.hideWidgetPicker();
-        }
       }
     });
   </script>
